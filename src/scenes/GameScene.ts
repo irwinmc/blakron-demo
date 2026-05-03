@@ -204,7 +204,7 @@ export class GameScene extends Sprite {
 		}
 
 		Tween.get(orbitCenter, { loop: true })
-			.to({ rotation: Math.PI * 2 }, 3000, Ease.linear)
+			.to({ rotation: 360 }, 3000, Ease.linear)
 			.call(() => {
 				orbitCenter.rotation = 0;
 			});

@@ -4,6 +4,7 @@ import {
 	Label,
 	Rect,
 	Button,
+	Image,
 	ProgressBar,
 	CheckBox,
 	RadioButton,
@@ -33,6 +34,7 @@ export class UIScene extends Sprite {
 		this.addChild(title);
 
 		this._buildLabels();
+		this._buildImage();
 		this._buildRects();
 		this._buildButtons();
 		this._buildProgressBar();
@@ -73,6 +75,28 @@ export class UIScene extends Sprite {
 		this.addChild(lbl3);
 	}
 
+	// ── Image ───────────────────────────────────────────────────────────────
+
+	private _buildImage(): void {
+		const label = new TextField();
+		label.text = 'Image (Black_Heron.webp)';
+		label.textColor = 0xb2bec3;
+		label.size = 14;
+		label.x = 250;
+		label.y = 55;
+		this.addChild(label);
+
+		const img = new Image('/assets/Black_Heron.webp');
+		img.x = 250;
+		img.y = 80;
+		img.width = 200;
+		img.height = 130;
+		img.addEventListener(Event.COMPLETE, () => {
+			console.log('[UIScene] Image loaded:', img.source);
+		});
+		this.addChild(img);
+	}
+
 	// ── Rects ──────────────────────────────────────────────────────────────
 
 	private _buildRects(): void {
@@ -81,23 +105,23 @@ export class UIScene extends Sprite {
 		label.textColor = 0xb2bec3;
 		label.size = 14;
 		label.x = 250;
-		label.y = 55;
+		label.y = 225;
 		this.addChild(label);
 
 		const r1 = new Rect(60, 40, 0xff6b6b);
 		r1.x = 250;
-		r1.y = 80;
+		r1.y = 250;
 		this.addChild(r1);
 
 		const r2 = new Rect(60, 40, 0x48dbfb);
 		r2.x = 320;
-		r2.y = 80;
+		r2.y = 250;
 		r2.fillAlpha = 0.6;
 		this.addChild(r2);
 
 		const r3 = new Rect(130, 40, 0x2d3436);
 		r3.x = 250;
-		r3.y = 130;
+		r3.y = 300;
 		r3.strokeColor = 0xfeca57;
 		r3.strokeWeight = 2;
 		this.addChild(r3);
@@ -130,8 +154,9 @@ export class UIScene extends Sprite {
 			btn.x = x;
 			btn.y = y;
 
-			// Transparent hit area so the Button itself can receive touch events.
-			btn.graphics.beginFill(0x000000, 0);
+			// Near-transparent hit area so the Button itself can receive touch events.
+			// Alpha must be > 0 for pixel-based hitTest to detect it.
+			btn.graphics.beginFill(0x000000, 0.01);
 			btn.graphics.drawRect(0, 0, 120, 36);
 			btn.graphics.endFill();
 
@@ -234,14 +259,24 @@ export class UIScene extends Sprite {
 		stateLabel.y = 345;
 		this.addChild(stateLabel);
 
+		const checkboxes: CheckBox[] = [];
+		const boxes: Rect[] = [];
+
+		const updateStateLabel = () => {
+			const selected = checkboxes.map((cb, idx) => (cb.selected ? items[idx] : null)).filter(Boolean);
+			stateLabel.text = selected.length > 0 ? `Selected: ${selected.join(', ')}` : 'Selected: none';
+		};
+
 		items.forEach((text, i) => {
 			const cb = new CheckBox();
 			cb.label = text;
+			cb.width = 180;
+			cb.height = 28;
 			cb.x = 20;
 			cb.y = 375 + i * 32;
 
-			// Transparent hit area covering the full row so touch events register.
-			cb.graphics.beginFill(0x000000, 0);
+			// Near-transparent hit area covering the full row so touch events register.
+			cb.graphics.beginFill(0x000000, 0.01);
 			cb.graphics.drawRect(0, 0, 180, 28);
 			cb.graphics.endFill();
 
@@ -258,12 +293,13 @@ export class UIScene extends Sprite {
 			lbl.textColor = 0xdfe6e9;
 			cb.addChild(lbl);
 
+			checkboxes.push(cb);
+			boxes.push(box);
+
 			cb.addEventListener(Event.CHANGE, () => {
-				const selected = items.filter((_, idx) => {
-					// Can't easily read state here, just show the changed one
-					return true;
-				});
-				stateLabel.text = `Changed: ${text}`;
+				// Update box fill color to reflect selected state
+				box.fillColor = cb.selected ? 0x6c5ce7 : 0x2d3436;
+				updateStateLabel();
 			});
 
 			this.addChild(cb);
@@ -290,15 +326,20 @@ export class UIScene extends Sprite {
 		this.addChild(radioLabel);
 
 		const items = ['Choice 1', 'Choice 2', 'Choice 3'];
+		const radioButtons: RadioButton[] = [];
+		const circles: Rect[] = [];
+
 		items.forEach((text, i) => {
 			const rb = new RadioButton();
 			rb.label = text;
 			rb.value = text;
+			rb.width = 180;
+			rb.height = 28;
 			rb.x = 20;
 			rb.y = 505 + i * 32;
 
-			// Transparent hit area covering the full row so touch events register.
-			rb.graphics.beginFill(0x000000, 0);
+			// Near-transparent hit area covering the full row so touch events register.
+			rb.graphics.beginFill(0x000000, 0.01);
 			rb.graphics.drawRect(0, 0, 180, 28);
 			rb.graphics.endFill();
 
@@ -314,7 +355,18 @@ export class UIScene extends Sprite {
 			lbl.textColor = 0xdfe6e9;
 			rb.addChild(lbl);
 
+			radioButtons.push(rb);
+			circles.push(circle);
+
 			rb.addEventListener(Event.CHANGE, () => {
+				if (!rb.selected) return;
+				// Deselect all others (RadioButton group behavior)
+				radioButtons.forEach((other, idx) => {
+					if (other !== rb && other.selected) {
+						other.selected = false;
+					}
+					circles[idx].fillColor = other.selected ? 0x00b894 : 0x2d3436;
+				});
 				radioLabel.text = `Selected: ${text}`;
 			});
 

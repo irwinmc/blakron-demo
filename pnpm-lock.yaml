@@ -9,14 +9,14 @@ importers:
   .:
     dependencies:
       '@blakron/core':
-        specifier: ^0.3.3
-        version: 0.3.3
+        specifier: ^0.3.8
+        version: 0.3.8
       '@blakron/game':
-        specifier: ^0.1.2
-        version: 0.1.2
+        specifier: ^0.1.3
+        version: 0.1.3
       '@blakron/ui':
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.2.1
+        version: 0.2.1
     devDependencies:
       typescript:
         specifier: ^5.6.0
@@ -27,14 +27,14 @@ importers:
 
 packages:
 
-  '@blakron/core@0.3.3':
-    resolution: {integrity: sha512-AOqsX6HlvrRw3aOxOPbyko+gZQYNXo90qGSt8iOtxCfqaaXm1X4LYbMegrInTAhyyG06nS2iK6KimuZcC1qPqg==}
+  '@blakron/core@0.3.8':
+    resolution: {integrity: sha512-u3mOiaU+5eh2Zoe5GIEllrlxm8x+E1eYyu04iecNdjSDcLo5IhnY/hXCruJ0oKBbt8ffRUQ1bD5CVzJa6ofnng==}
 
-  '@blakron/game@0.1.2':
-    resolution: {integrity: sha512-2kwnmcNYnA6noo50GJGWziW/gSlmTJfqdy+jc8eS2TVPVyt80Hh0qn22yIqjx0dOGe469JQz/XwAczqQYFM1xw==}
+  '@blakron/game@0.1.3':
+    resolution: {integrity: sha512-En1yAd/uaRe9MT2jjw3cVVl2Axei9kz7fvsTrTvAKySBRQ/3omzOC0DCTA0XXUdMBkMlBH2v3QVHA91RU2rVEw==}
 
-  '@blakron/ui@0.2.0':
-    resolution: {integrity: sha512-dOFUKo92bLud2uMaIPv3FRr+JjsePzswp1TeQsVQb8mejncPtKA1KARDqnqta3puyxt5lgDOK1JHnLsHSucHSQ==}
+  '@blakron/ui@0.2.1':
+    resolution: {integrity: sha512-Po8Ltm3TaBeL6oNQ4/4KN6qdQUuqwGxXtFNM0QF6YHgyFAaBLMmRtHlcMzUwsXkJWeAcNJsr+9zgHOnoIiETlA==}
 
   '@emnapi/core@1.10.0':
     resolution: {integrity: sha512-yq6OkJ4p82CAfPl0u9mQebQHKPJkY7WrIuk205cTYnYe+k2Z8YBh11FrbRG/H6ihirqcacOgl2BIO8oyMQLeXw==}
@@ -329,15 +329,15 @@ packages:
 
 snapshots:
 
-  '@blakron/core@0.3.3': {}
+  '@blakron/core@0.3.8': {}
 
-  '@blakron/game@0.1.2':
+  '@blakron/game@0.1.3':
     dependencies:
-      '@blakron/core': 0.3.3
+      '@blakron/core': 0.3.8
 
-  '@blakron/ui@0.2.0':
+  '@blakron/ui@0.2.1':
     dependencies:
-      '@blakron/core': 0.3.3
+      '@blakron/core': 0.3.8
 
   '@emnapi/core@1.10.0':
     dependencies:

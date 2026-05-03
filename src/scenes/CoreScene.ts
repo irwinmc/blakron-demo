@@ -9,6 +9,10 @@ import {
 	GlowFilter,
 	ColorMatrixFilter,
 	TouchEvent,
+	ImageLoader,
+	resource,
+	ResourceType,
+	Event,
 } from '@blakron/core';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -70,6 +74,7 @@ export class CoreScene extends Sprite {
 		this._buildFilters();
 		this._buildInteractiveSprite();
 		this._buildRenderGroup();
+		this._buildImageLoading();
 	}
 
 	// ── Shape (矢量矩形 / 圆形) ───────────────────────────────────────────
@@ -212,12 +217,7 @@ export class CoreScene extends Sprite {
 		colorTarget.x = 220;
 		colorTarget.y = 460;
 		const gray = new ColorMatrixFilter();
-		gray.matrix = [
-			0.3, 0.6, 0.1, 0, 0,
-			0.3, 0.6, 0.1, 0, 0,
-			0.3, 0.6, 0.1, 0, 0,
-			0, 0, 0, 1, 0,
-		];
+		gray.matrix = [0.3, 0.6, 0.1, 0, 0, 0.3, 0.6, 0.1, 0, 0, 0.3, 0.6, 0.1, 0, 0, 0, 0, 0, 1, 0];
 		colorTarget.filters = [gray];
 		this.addChild(colorTarget);
 	}
@@ -250,7 +250,9 @@ export class CoreScene extends Sprite {
 			label.text = `Tap me! (${count})`;
 			// Flash effect
 			box.alpha = 0.6;
-			setTimeout(() => { box.alpha = 1.0; }, 100);
+			setTimeout(() => {
+				box.alpha = 1.0;
+			}, 100);
 		});
 
 		this.addChild(box);
@@ -282,5 +284,160 @@ export class CoreScene extends Sprite {
 		group.addChild(label);
 
 		this.addChild(group);
+	}
+
+	// ── Image Loading ──────────────────────────────────────────────────────
+
+	private _buildImageLoading(): void {
+		// Section title
+		const sectionLabel = new TextField();
+		sectionLabel.text = 'Image Loading';
+		sectionLabel.textColor = 0xb2bec3;
+		sectionLabel.size = 14;
+		sectionLabel.x = 20;
+		sectionLabel.y = 620;
+		this.addChild(sectionLabel);
+
+		// ── Part 1: ImageLoader (single image, manual) ──────────────────────
+
+		const loaderLabel = new TextField();
+		loaderLabel.text = 'ImageLoader (single):';
+		loaderLabel.textColor = 0x636e72;
+		loaderLabel.size = 12;
+		loaderLabel.x = 20;
+		loaderLabel.y = 645;
+		this.addChild(loaderLabel);
+
+		// Placeholder shown while loading
+		const placeholder = new Shape();
+		placeholder.graphics.beginFill(0x2d3436);
+		placeholder.graphics.drawRoundRect(0, 0, 128, 128, 8);
+		placeholder.graphics.endFill();
+		placeholder.x = 20;
+		placeholder.y = 665;
+		this.addChild(placeholder);
+
+		const statusTf = new TextField();
+		statusTf.text = 'Loading...';
+		statusTf.textColor = 0x636e72;
+		statusTf.size = 12;
+		statusTf.x = 20;
+		statusTf.y = 800;
+		this.addChild(statusTf);
+
+		const loader = new ImageLoader();
+		loader.addEventListener(Event.COMPLETE, () => {
+			if (!loader.data) return;
+			// Remove placeholder
+			this.removeChild(placeholder);
+			// Create texture + bitmap
+			const tex = new Texture();
+			tex.setBitmapData(loader.data);
+			const bmp = new Bitmap(tex);
+			bmp.x = 20;
+			bmp.y = 665;
+			bmp.width = 128;
+			bmp.height = 128;
+			this.addChild(bmp);
+			statusTf.text = `Loaded ✓  ${loader.data.width}×${loader.data.height}`;
+			statusTf.textColor = 0x00b894;
+		});
+		loader.addEventListener('ioError', () => {
+			statusTf.text = 'Load failed ✗';
+			statusTf.textColor = 0xe17055;
+		});
+		loader.load('/assets/img-red.svg');
+
+		// ── Part 2: resource manager (batch load with progress) ────────────
+
+		const batchLabel = new TextField();
+		batchLabel.text = 'resource.loadGroup (batch):';
+		batchLabel.textColor = 0x636e72;
+		batchLabel.size = 12;
+		batchLabel.x = 170;
+		batchLabel.y = 645;
+		this.addChild(batchLabel);
+
+		// Progress bar background
+		const pbBg = new Shape();
+		pbBg.graphics.beginFill(0x2d3436);
+		pbBg.graphics.drawRoundRect(0, 0, 240, 10, 4);
+		pbBg.graphics.endFill();
+		pbBg.x = 170;
+		pbBg.y = 665;
+		this.addChild(pbBg);
+
+		// Progress bar fill
+		const pbFill = new Shape();
+		pbFill.graphics.beginFill(0x6c5ce7);
+		pbFill.graphics.drawRoundRect(0, 0, 0, 10, 4);
+		pbFill.graphics.endFill();
+		pbFill.x = 170;
+		pbFill.y = 665;
+		this.addChild(pbFill);
+
+		const batchStatus = new TextField();
+		batchStatus.text = '0 / 2';
+		batchStatus.textColor = 0x636e72;
+		batchStatus.size = 12;
+		batchStatus.x = 170;
+		batchStatus.y = 680;
+		this.addChild(batchStatus);
+
+		// Slots for the two batch-loaded images
+		const slots: Bitmap[] = [];
+		for (let i = 0; i < 2; i++) {
+			const slot = new Shape();
+			slot.graphics.beginFill(0x2d3436);
+			slot.graphics.drawRoundRect(0, 0, 110, 110, 8);
+			slot.graphics.endFill();
+			slot.x = 170 + i * 120;
+			slot.y = 700;
+			this.addChild(slot);
+		}
+
+		// Register resources and load
+		resource.addResource({ name: 'img-green', url: '/assets/img-green.svg', type: ResourceType.Image });
+		resource.addResource({ name: 'img-blue', url: '/assets/img-blue.svg', type: ResourceType.Image });
+
+		// Manually load both with progress tracking
+		let loadedCount = 0;
+		const total = 2;
+		const names = ['img-green', 'img-blue'];
+
+		const updateProgress = (n: number) => {
+			const pct = n / total;
+			// Redraw fill bar
+			pbFill.graphics.clear();
+			pbFill.graphics.beginFill(0x6c5ce7);
+			pbFill.graphics.drawRoundRect(0, 0, Math.round(240 * pct), 10, 4);
+			pbFill.graphics.endFill();
+			batchStatus.text = `${n} / ${total}`;
+		};
+
+		const showBatchImages = () => {
+			names.forEach((name, i) => {
+				const tex = resource.get<Texture>(name);
+				if (!tex) return;
+				const bmp = new Bitmap(tex);
+				bmp.x = 170 + i * 120;
+				bmp.y = 700;
+				bmp.width = 110;
+				bmp.height = 110;
+				this.addChild(bmp);
+			});
+			batchStatus.text = 'All loaded ✓';
+			batchStatus.textColor = 0x00b894;
+		};
+
+		// Load sequentially to show progress
+		(async () => {
+			for (const name of names) {
+				await resource.load(name);
+				loadedCount++;
+				updateProgress(loadedCount);
+			}
+			showBatchImages();
+		})();
 	}
 }

@@ -16,6 +16,29 @@ import {
 } from '@blakron/ui';
 import { Tween, Ease } from '@blakron/game';
 
+// ── Layout constants ─────────────────────────────────────────────────────────
+
+const COL_LEFT_X = 0;
+const COL_RIGHT_X = 440;
+const SECTION_GAP = 20;
+const ROW_GAP = 32;
+const HEADER_H = 22;
+
+/** Create a section group with a header label. */
+function sectionGroup(title: string, x: number, y: number): Group {
+	const group = new Group();
+	group.x = x;
+	group.y = y;
+
+	const label = new TextField();
+	label.text = title;
+	label.textColor = 0xb2bec3;
+	label.size = 14;
+	group.addChild(label);
+
+	return group;
+}
+
 // ── UIScene ──────────────────────────────────────────────────────────────────
 
 export class UIScene extends Sprite {
@@ -24,6 +47,7 @@ export class UIScene extends Sprite {
 	}
 
 	public create(): void {
+		// Title
 		const title = new TextField();
 		title.text = 'UI Scene';
 		title.textColor = 0xffffff;
@@ -33,140 +57,86 @@ export class UIScene extends Sprite {
 		title.y = 10;
 		this.addChild(title);
 
-		this._buildLabels();
-		this._buildImage();
-		this._buildRects();
-		this._buildButtons();
-		this._buildProgressBar();
-		this._buildCheckBoxes();
-		this._buildRadioButtons();
-		this._buildAnimation();
+		// ── Left column ──────────────────────────────────────────────────
+		let ly = 55;
+
+		ly = this._buildLabels(COL_LEFT_X, ly) + SECTION_GAP;
+		ly = this._buildButtons(COL_LEFT_X, ly) + SECTION_GAP;
+		ly = this._buildProgressBar(COL_LEFT_X, ly) + SECTION_GAP;
+		ly = this._buildCheckBoxes(COL_LEFT_X, ly) + SECTION_GAP;
+		ly = this._buildRadioButtons(COL_LEFT_X, ly) + SECTION_GAP;
+		this._buildAnimation(COL_LEFT_X, ly);
+
+		// ── Right column ─────────────────────────────────────────────────
+		let ry = 55;
+
+		ry = this._buildImage(COL_RIGHT_X, ry) + SECTION_GAP;
+		this._buildRects(COL_RIGHT_X, ry);
 	}
 
 	// ── Labels ─────────────────────────────────────────────────────────────
 
-	private _buildLabels(): void {
-		const label = new TextField();
-		label.text = 'Labels';
-		label.textColor = 0xb2bec3;
-		label.size = 14;
-		label.x = 20;
-		label.y = 55;
-		this.addChild(label);
+	private _buildLabels(x: number, y: number): number {
+		const g = sectionGroup('Labels', x, y);
+		this.addChild(g);
 
-		// Using UI Label component
+		let cy = HEADER_H;
+
 		const lbl1 = new Label('Default Label');
-		lbl1.x = 20;
-		lbl1.y = 80;
-		this.addChild(lbl1);
+		lbl1.y = cy;
+		g.addChild(lbl1);
+		cy += 30;
 
 		const lbl2 = new Label('Colored Label');
-		lbl2.x = 20;
-		lbl2.y = 110;
+		lbl2.y = cy;
 		lbl2.textColor = 0xfeca57;
 		lbl2.size = 20;
-		this.addChild(lbl2);
+		g.addChild(lbl2);
+		cy += 30;
 
 		const lbl3 = new Label('Bold Label');
-		lbl3.x = 20;
-		lbl3.y = 140;
+		lbl3.y = cy;
 		lbl3.bold = true;
 		lbl3.size = 18;
-		this.addChild(lbl3);
-	}
+		g.addChild(lbl3);
 
-	// ── Image ───────────────────────────────────────────────────────────────
-
-	private _buildImage(): void {
-		const label = new TextField();
-		label.text = 'Image (Black_Heron.webp)';
-		label.textColor = 0xb2bec3;
-		label.size = 14;
-		label.x = 250;
-		label.y = 55;
-		this.addChild(label);
-
-		const img = new Image('/assets/Black_Heron.webp');
-		img.x = 250;
-		img.y = 80;
-		img.width = 200;
-		img.height = 130;
-		img.addEventListener(Event.COMPLETE, () => {
-			console.log('[UIScene] Image loaded:', img.source);
-		});
-		this.addChild(img);
-	}
-
-	// ── Rects ──────────────────────────────────────────────────────────────
-
-	private _buildRects(): void {
-		const label = new TextField();
-		label.text = 'Rects';
-		label.textColor = 0xb2bec3;
-		label.size = 14;
-		label.x = 250;
-		label.y = 225;
-		this.addChild(label);
-
-		const r1 = new Rect(60, 40, 0xff6b6b);
-		r1.x = 250;
-		r1.y = 250;
-		this.addChild(r1);
-
-		const r2 = new Rect(60, 40, 0x48dbfb);
-		r2.x = 320;
-		r2.y = 250;
-		r2.fillAlpha = 0.6;
-		this.addChild(r2);
-
-		const r3 = new Rect(130, 40, 0x2d3436);
-		r3.x = 250;
-		r3.y = 300;
-		r3.strokeColor = 0xfeca57;
-		r3.strokeWeight = 2;
-		this.addChild(r3);
+		return y + HEADER_H + 90;
 	}
 
 	// ── Buttons ────────────────────────────────────────────────────────────
 
-	private _buildButtons(): void {
-		const label = new TextField();
-		label.text = 'Buttons (tap to test events)';
-		label.textColor = 0xb2bec3;
-		label.size = 14;
-		label.x = 20;
-		label.y = 190;
-		this.addChild(label);
+	private _buildButtons(x: number, y: number): number {
+		const g = sectionGroup('Buttons (tap to test events)', x, y);
+		this.addChild(g);
 
 		const statusTf = new TextField();
 		statusTf.text = 'Status: idle';
 		statusTf.textColor = 0xdfe6e9;
 		statusTf.size = 14;
 		statusTf.x = 200;
-		statusTf.y = 190;
-		this.addChild(statusTf);
+		statusTf.y = 0;
+		g.addChild(statusTf);
 
-		const createBtn = (text: string, x: number, y: number, color: number): Button => {
+		const createBtn = (text: string, bx: number, color: number): Button => {
 			const btn = new Button();
 			btn.label = text;
 			btn.width = 120;
 			btn.height = 36;
-			btn.x = x;
-			btn.y = y;
+			btn.x = bx;
+			btn.y = HEADER_H;
 
-			// Near-transparent hit area so the Button itself can receive touch events.
-			// Alpha must be > 0 for pixel-based hitTest to detect it.
 			btn.graphics.beginFill(0x000000, 0.01);
 			btn.graphics.drawRect(0, 0, 120, 36);
 			btn.graphics.endFill();
 
-			// Manual skin: background rect + label
 			const bg = new Rect(120, 36, color);
 			btn.addChild(bg);
 
 			const lbl = new Label(text);
-			lbl.x = 10;
-			lbl.y = 6;
+			lbl.width = 120;
+			lbl.height = 36;
+			lbl.textAlign = 'center';
+			lbl.verticalAlign = 'middle';
 			lbl.textColor = 0xffffff;
 			lbl.size = 16;
 			btn.labelDisplay = lbl;
@@ -176,52 +146,44 @@ export class UIScene extends Sprite {
 				statusTf.text = `Tapped: ${text}`;
 			});
 
-			this.addChild(btn);
+			g.addChild(btn);
 			return btn;
 		};
 
-		createBtn('Button A', 20, 215, 0x6c5ce7);
-		createBtn('Button B', 160, 215, 0x00b894);
-		createBtn('Button C', 300, 215, 0xe17055);
+		createBtn('Button A', 0, 0x6c5ce7);
+		createBtn('Button B', 140, 0x00b894);
+		createBtn('Button C', 280, 0xe17055);
+
+		return y + HEADER_H + 36;
 	}
 
 	// ── ProgressBar ────────────────────────────────────────────────────────
 
-	private _buildProgressBar(): void {
-		const label = new TextField();
-		label.text = 'ProgressBar + Animation';
-		label.textColor = 0xb2bec3;
-		label.size = 14;
-		label.x = 20;
-		label.y = 275;
-		this.addChild(label);
+	private _buildProgressBar(x: number, y: number): number {
+		const g = sectionGroup('ProgressBar + Animation', x, y);
+		this.addChild(g);
 
-		// Progress bar background
 		const pbBg = new Rect(300, 20, 0x2d3436);
-		pbBg.x = 20;
-		pbBg.y = 300;
+		pbBg.y = HEADER_H;
 		pbBg.strokeColor = 0x636e72;
 		pbBg.strokeWeight = 1;
-		this.addChild(pbBg);
+		g.addChild(pbBg);
 
-		// Progress bar fill
 		const pbFill = new Rect(150, 20, 0x6c5ce7);
-		pbFill.x = 20;
-		pbFill.y = 300;
-		this.addChild(pbFill);
+		pbFill.y = HEADER_H;
+		g.addChild(pbFill);
 
 		const pbLabel = new TextField();
 		pbLabel.text = '50%';
 		pbLabel.textColor = 0xffffff;
 		pbLabel.size = 12;
-		pbLabel.x = 330;
-		pbLabel.y = 303;
-		this.addChild(pbLabel);
+		pbLabel.x = 310;
+		pbLabel.y = HEADER_H + 3;
+		g.addChild(pbLabel);
 
-		// Animate the progress bar using core ticker + manual animation
 		let progress = 0;
 		let direction = 1;
-		const animate = () => {
+		setInterval(() => {
 			progress += direction * 0.005;
 			if (progress >= 1) {
 				progress = 1;
@@ -233,31 +195,26 @@ export class UIScene extends Sprite {
 			}
 			pbFill.width = 300 * progress;
 			pbLabel.text = `${Math.round(progress * 100)}%`;
-		};
+		}, 16);
 
-		// Use a simple setInterval for animation (Animation from ui would also work)
-		setInterval(animate, 16);
+		return y + HEADER_H + 20;
 	}
 
 	// ── CheckBoxes ─────────────────────────────────────────────────────────
 
-	private _buildCheckBoxes(): void {
-		const label = new TextField();
-		label.text = 'CheckBoxes';
-		label.textColor = 0xb2bec3;
-		label.size = 14;
-		label.x = 20;
-		label.y = 345;
-		this.addChild(label);
+	private _buildCheckBoxes(x: number, y: number): number {
+		const g = sectionGroup('CheckBoxes', x, y);
+		this.addChild(g);
 
 		const items = ['Option A', 'Option B', 'Option C'];
+
 		const stateLabel = new TextField();
 		stateLabel.text = 'Selected: none';
 		stateLabel.textColor = 0xdfe6e9;
 		stateLabel.size = 12;
-		stateLabel.x = 200;
-		stateLabel.y = 345;
-		this.addChild(stateLabel);
+		stateLabel.x = 180;
+		stateLabel.y = 0;
+		g.addChild(stateLabel);
 
 		const checkboxes: CheckBox[] = [];
 		const boxes: Rect[] = [];
@@ -272,15 +229,12 @@ export class UIScene extends Sprite {
 			cb.label = text;
 			cb.width = 180;
 			cb.height = 28;
-			cb.x = 20;
-			cb.y = 375 + i * 32;
+			cb.y = HEADER_H + i * ROW_GAP;
 
-			// Near-transparent hit area covering the full row so touch events register.
 			cb.graphics.beginFill(0x000000, 0.01);
 			cb.graphics.drawRect(0, 0, 180, 28);
 			cb.graphics.endFill();
 
-			// Manual visual: box + label
 			const box = new Rect(20, 20, 0x2d3436);
 			box.strokeColor = 0x636e72;
 			box.strokeWeight = 1;
@@ -297,35 +251,32 @@ export class UIScene extends Sprite {
 			boxes.push(box);
 
 			cb.addEventListener(Event.CHANGE, () => {
-				// Update box fill color to reflect selected state
 				box.fillColor = cb.selected ? 0x6c5ce7 : 0x2d3436;
 				updateStateLabel();
 			});
 
-			this.addChild(cb);
+			g.addChild(cb);
 		});
+
+		return y + HEADER_H + items.length * ROW_GAP;
 	}
 
 	// ── RadioButtons ───────────────────────────────────────────────────────
 
-	private _buildRadioButtons(): void {
-		const label = new TextField();
-		label.text = 'RadioButtons';
-		label.textColor = 0xb2bec3;
-		label.size = 14;
-		label.x = 20;
-		label.y = 475;
-		this.addChild(label);
+	private _buildRadioButtons(x: number, y: number): number {
+		const g = sectionGroup('RadioButtons', x, y);
+		this.addChild(g);
+
+		const items = ['Choice 1', 'Choice 2', 'Choice 3'];
 
 		const radioLabel = new TextField();
 		radioLabel.text = 'Selected: none';
 		radioLabel.textColor = 0xdfe6e9;
 		radioLabel.size = 12;
-		radioLabel.x = 200;
-		radioLabel.y = 475;
-		this.addChild(radioLabel);
+		radioLabel.x = 180;
+		radioLabel.y = 0;
+		g.addChild(radioLabel);
 
-		const items = ['Choice 1', 'Choice 2', 'Choice 3'];
 		const radioButtons: RadioButton[] = [];
 		const circles: Rect[] = [];
 
@@ -335,10 +286,8 @@ export class UIScene extends Sprite {
 			rb.value = text;
 			rb.width = 180;
 			rb.height = 28;
-			rb.x = 20;
-			rb.y = 505 + i * 32;
+			rb.y = HEADER_H + i * ROW_GAP;
 
-			// Near-transparent hit area covering the full row so touch events register.
 			rb.graphics.beginFill(0x000000, 0.01);
 			rb.graphics.drawRect(0, 0, 180, 28);
 			rb.graphics.endFill();
@@ -360,7 +309,6 @@ export class UIScene extends Sprite {
 
 			rb.addEventListener(Event.CHANGE, () => {
 				if (!rb.selected) return;
-				// Deselect all others (RadioButton group behavior)
 				radioButtons.forEach((other, idx) => {
 					if (other !== rb && other.selected) {
 						other.selected = false;
@@ -370,31 +318,70 @@ export class UIScene extends Sprite {
 				radioLabel.text = `Selected: ${text}`;
 			});
 
-			this.addChild(rb);
+			g.addChild(rb);
 		});
+
+		return y + HEADER_H + items.length * ROW_GAP;
 	}
 
-	// ── Animation (pulse via Tween) ────────────────────────────────────────
+	// ── Animation ──────────────────────────────────────────────────────────
 
-	private _buildAnimation(): void {
-		const label = new TextField();
-		label.text = 'UI Animation (pulse)';
-		label.textColor = 0xb2bec3;
-		label.size = 14;
-		label.x = 20;
-		label.y = 610;
-		this.addChild(label);
+	private _buildAnimation(x: number, y: number): number {
+		const g = sectionGroup('UI Animation (pulse)', x, y);
+		this.addChild(g);
 
 		const box = new Rect(60, 60, 0xe17055);
-		box.x = 200;
-		box.y = 610;
-		this.addChild(box);
+		box.x = 180;
+		box.y = 10;
+		g.addChild(box);
 
-		// Use Tween for a clearly visible ping-pong pulse animation.
-		// The box scales from 1× to 1.8× and back, with position compensation
-		// so it stays visually centered around its original position.
 		Tween.get(box, { loop: true })
-			.to({ scaleX: 1.8, scaleY: 1.8, x: 170, y: 580 }, 600, Ease.sineInOut)
-			.to({ scaleX: 1.0, scaleY: 1.0, x: 200, y: 610 }, 600, Ease.sineInOut);
+			.to({ scaleX: 1.8, scaleY: 1.8, x: 150, y: -8 }, 600, Ease.sineInOut)
+			.to({ scaleX: 1.0, scaleY: 1.0, x: 180, y: 10 }, 600, Ease.sineInOut);
+
+		return y + 10 + 60 + 40;
+	}
+
+	// ── Image ───────────────────────────────────────────────────────────────
+
+	private _buildImage(x: number, y: number): number {
+		const g = sectionGroup('Image (Black_Heron.webp)', x, y);
+		this.addChild(g);
+
+		const img = new Image('/assets/Black_Heron.webp');
+		img.y = HEADER_H;
+		img.width = 200;
+		img.height = 130;
+		img.addEventListener(Event.COMPLETE, () => {
+			console.log('[UIScene] Image loaded:', img.source);
+		});
+		g.addChild(img);
+
+		return y + HEADER_H + 130;
+	}
+
+	// ── Rects ──────────────────────────────────────────────────────────────
+
+	private _buildRects(x: number, y: number): number {
+		const g = sectionGroup('Rects', x, y);
+		this.addChild(g);
+
+		const r1 = new Rect(60, 40, 0xff6b6b);
+		r1.y = HEADER_H;
+		g.addChild(r1);
+
+		const r2 = new Rect(60, 40, 0x48dbfb);
+		r2.x = 70;
+		r2.y = HEADER_H;
+		r2.fillAlpha = 0.6;
+		g.addChild(r2);
+
+		const r3 = new Rect(140, 40, 0x2d3436);
+		r3.y = HEADER_H + 50;
+		r3.strokeColor = 0xfeca57;
+		r3.strokeWeight = 2;
+		g.addChild(r3);
+
+		return y + HEADER_H + 50 + 40;
 	}
 }

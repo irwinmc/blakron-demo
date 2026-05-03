@@ -7,15 +7,11 @@ import {
 	Image,
 	CheckBox,
 	RadioButton,
-	ArrayCollection,
 	HSlider,
 	VSlider,
 	ToggleSwitch,
 	ViewStack,
 	Panel,
-	List,
-	ItemRenderer,
-	ItemTapEvent,
 } from '@blakron/ui';
 import { Tween, Ease } from '@blakron/game';
 
@@ -411,72 +407,65 @@ export class UIScene extends Sprite {
 		const g = sectionGroup('HSlider / VSlider', x, y);
 		this.addChild(g);
 
-		// Value display
-		const valTf = new TextField();
-		valTf.text = 'Value: 50';
-		valTf.textColor = 0xdfe6e9;
-		valTf.size = 12;
-		valTf.x = 220;
-		valTf.y = HEADER_H;
-		g.addChild(valTf);
-
-		// HSlider — track + thumb built manually
 		const trackW = 200;
 		const trackH = 8;
 		const thumbSize = 20;
 
-		const hTrack = new Rect(trackW, trackH, 0x2d3436);
-		hTrack.strokeColor = 0x636e72;
-		hTrack.strokeWeight = 1;
-		hTrack.y = HEADER_H + 6;
-		g.addChild(hTrack);
+		// Value display
+		const valTf = new TextField();
+		valTf.text = 'H: 50   V: 0';
+		valTf.textColor = 0xdfe6e9;
+		valTf.size = 12;
+		valTf.x = 0;
+		valTf.y = HEADER_H;
+		g.addChild(valTf);
 
-		const hFill = new Rect(100, trackH, 0x6c5ce7);
-		hFill.y = HEADER_H + 6;
-		g.addChild(hFill);
-
-		const hThumb = new Rect(thumbSize, thumbSize, 0xffffff);
-		hThumb.x = 100 - thumbSize / 2;
-		hThumb.y = HEADER_H;
-		hThumb.touchEnabled = true;
-		g.addChild(hThumb);
-
-		// Wire up HSlider
+		// ── HSlider ───────────────────────────────────────────────────────
+		// thumb/track/fill are children of hs so coordinates are in hs-local space
 		const hs = new HSlider();
 		hs.minimum = 0;
 		hs.maximum = 100;
 		hs.value = 50;
 		hs.width = trackW;
 		hs.height = thumbSize;
-		hs.y = HEADER_H;
-		hs.thumb = hThumb;
-		hs.track = hTrack;
+		hs.x = 0;
+		hs.y = HEADER_H + 24;
+		hs.touchChildren = true;
+
+		const hTrack = new Rect(trackW, trackH, 0x2d3436);
+		hTrack.strokeColor = 0x636e72;
+		hTrack.strokeWeight = 1;
+		hTrack.y = (thumbSize - trackH) / 2;
+		hs.addChild(hTrack);
+
+		const hFill = new Rect(trackW / 2, trackH, 0x6c5ce7);
+		hFill.y = (thumbSize - trackH) / 2;
+		hs.addChild(hFill);
+
+		const hThumb = new Rect(thumbSize, thumbSize, 0xffffff);
+		hThumb.x = trackW / 2 - thumbSize / 2;
+		hThumb.y = 0;
+		hThumb.touchEnabled = true;
+		hs.addChild(hThumb);
+
+		// transparent hit area on hs itself
 		hs.graphics.beginFill(0x000000, 0.01);
 		hs.graphics.drawRect(0, 0, trackW, thumbSize);
 		hs.graphics.endFill();
+
+		hs.thumb = hThumb;
+		hs.track = hTrack;
 		g.addChild(hs);
 
 		hs.addEventListener('propertyChange', () => {
 			const pct = hs.value / 100;
 			hFill.width = trackW * pct;
 			hThumb.x = trackW * pct - thumbSize / 2;
-			valTf.text = `Value: ${Math.round(hs.value)}`;
+			valTf.text = `H: ${Math.round(hs.value)}   V: ${Math.round(vs.value)}`;
 		});
 
-		// VSlider
-		const vTrackH = 80;
-		const vTrack = new Rect(trackH, vTrackH, 0x2d3436);
-		vTrack.strokeColor = 0x636e72;
-		vTrack.strokeWeight = 1;
-		vTrack.x = 220 + 6;
-		vTrack.y = HEADER_H + 30;
-		g.addChild(vTrack);
-
-		const vThumb = new Rect(thumbSize, thumbSize, 0x00b894);
-		vThumb.x = 220;
-		vThumb.y = HEADER_H + 30 + vTrackH - thumbSize;
-		vThumb.touchEnabled = true;
-		g.addChild(vThumb);
+		// ── VSlider ───────────────────────────────────────────────────────
+		const vTrackH = 100;
 
 		const vs = new VSlider();
 		vs.minimum = 0;
@@ -484,21 +473,37 @@ export class UIScene extends Sprite {
 		vs.value = 0;
 		vs.width = thumbSize;
 		vs.height = vTrackH;
-		vs.x = 220;
-		vs.y = HEADER_H + 30;
-		vs.thumb = vThumb;
-		vs.track = vTrack;
+		vs.x = trackW + 20;
+		vs.y = HEADER_H + 24;
+		vs.touchChildren = true;
+
+		const vTrack = new Rect(trackH, vTrackH, 0x2d3436);
+		vTrack.strokeColor = 0x636e72;
+		vTrack.strokeWeight = 1;
+		vTrack.x = (thumbSize - trackH) / 2;
+		vs.addChild(vTrack);
+
+		const vThumb = new Rect(thumbSize, thumbSize, 0x00b894);
+		vThumb.x = 0;
+		vThumb.y = vTrackH - thumbSize;
+		vThumb.touchEnabled = true;
+		vs.addChild(vThumb);
+
 		vs.graphics.beginFill(0x000000, 0.01);
 		vs.graphics.drawRect(0, 0, thumbSize, vTrackH);
 		vs.graphics.endFill();
+
+		vs.thumb = vThumb;
+		vs.track = vTrack;
 		g.addChild(vs);
 
 		vs.addEventListener('propertyChange', () => {
 			const pct = vs.value / 100;
-			vThumb.y = HEADER_H + 30 + vTrackH * (1 - pct) - thumbSize / 2;
+			vThumb.y = vTrackH * (1 - pct) - thumbSize / 2;
+			valTf.text = `H: ${Math.round(hs.value)}   V: ${Math.round(vs.value)}`;
 		});
 
-		return y + HEADER_H + 30 + vTrackH + 10;
+		return y + HEADER_H + 24 + vTrackH + 8;
 	}
 
 	// ── ToggleSwitch ───────────────────────────────────────────────────────
@@ -650,69 +655,58 @@ export class UIScene extends Sprite {
 	// ── List ───────────────────────────────────────────────────────────────
 
 	private _buildList(x: number, y: number): number {
-		const g = sectionGroup('List + ArrayCollection', x, y);
+		const g = sectionGroup('List (tap to select)', x, y);
 		this.addChild(g);
 
 		const items = ['Apple', 'Banana', 'Cherry', 'Durian', 'Elderberry'];
-		const data = new ArrayCollection(items);
+		const rowH = 36;
 
 		const selTf = new TextField();
 		selTf.text = 'Selected: none';
 		selTf.textColor = 0xdfe6e9;
 		selTf.size = 12;
-		selTf.x = 180;
+		selTf.x = 0;
 		selTf.y = 0;
 		g.addChild(selTf);
 
-		const list = new List();
-		list.dataProvider = data;
-		list.width = 160;
-		list.height = items.length * 36;
-		list.y = HEADER_H;
-		g.addChild(list);
+		const rows: Rect[] = [];
 
-		// Build item renderers manually
 		items.forEach((item, i) => {
-			const renderer = new ItemRenderer();
-			renderer.width = 160;
-			renderer.height = 36;
-			renderer.y = i * 36;
-			renderer.data = item;
-			renderer.itemIndex = i;
+			const row = new Sprite();
+			row.y = HEADER_H + i * rowH;
+			row.touchEnabled = true;
 
-			renderer.graphics.beginFill(0x000000, 0.01);
-			renderer.graphics.drawRect(0, 0, 160, 36);
-			renderer.graphics.endFill();
+			const bg = new Rect(200, rowH, i % 2 === 0 ? 0x16213e : 0x0f3460);
+			bg.strokeColor = 0x2d3436;
+			bg.strokeWeight = 1;
+			row.addChild(bg);
+			rows.push(bg);
 
-			const bg = new Rect(160, 36, i % 2 === 0 ? 0x16213e : 0x0f3460);
-			renderer.addChild(bg);
+			// transparent hit area
+			row.graphics.beginFill(0x000000, 0.01);
+			row.graphics.drawRect(0, 0, 200, rowH);
+			row.graphics.endFill();
 
 			const lbl = new Label(item);
 			lbl.x = 12;
 			lbl.y = 0;
-			lbl.width = 136;
-			lbl.height = 36;
+			lbl.width = 176;
+			lbl.height = rowH;
 			lbl.verticalAlign = 'middle';
 			lbl.textColor = 0xdfe6e9;
 			lbl.size = 14;
-			renderer.addChild(lbl);
+			row.addChild(lbl);
 
-			list.addChild(renderer);
+			row.addEventListener(TouchEvent.TOUCH_TAP, () => {
+				selTf.text = `Selected: ${item}`;
+				rows.forEach((r, idx) => {
+					r.fillColor = idx === i ? 0x6c5ce7 : idx % 2 === 0 ? 0x16213e : 0x0f3460;
+				});
+			});
+
+			g.addChild(row);
 		});
 
-		list.addEventListener(ItemTapEvent.ITEM_TAP, (e: Event) => {
-			const ite = e as ItemTapEvent;
-			selTf.text = `Selected: ${ite.item}`;
-			// Highlight selected row
-			for (let i = 0; i < list.numChildren; i++) {
-				const r = list.getChildAt(i) as ItemRenderer;
-				if (!r) continue;
-				const bg = r.getChildAt(0) as Rect;
-				if (!bg) continue;
-				bg.fillColor = r.itemIndex === ite.itemIndex ? 0x6c5ce7 : r.itemIndex % 2 === 0 ? 0x16213e : 0x0f3460;
-			}
-		});
-
-		return y + HEADER_H + items.length * 36;
+		return y + HEADER_H + items.length * rowH;
 	}
 }

@@ -1,4 +1,4 @@
-import { Sprite, TextField, TouchEvent, Event } from '@blakron/core';
+import { Sprite, TextField, TouchEvent, Event, Rectangle } from '@blakron/core';
 import {
 	Group,
 	Label,
@@ -7,13 +7,62 @@ import {
 	Image,
 	CheckBox,
 	RadioButton,
+	ArrayCollection,
 	HSlider,
 	VSlider,
 	ToggleSwitch,
 	ViewStack,
 	Panel,
+	List,
+	ItemRenderer,
+	ItemTapEvent,
+	ProgressBar,
+	Scroller,
 } from '@blakron/ui';
 import { Tween, Ease } from '@blakron/game';
+
+// ── Custom ItemRenderer ───────────────────────────────────────────────────────
+
+class TextItemRenderer extends ItemRenderer {
+	private _bg: Rect;
+	private _lbl: Label;
+
+	constructor() {
+		super();
+		this.width = 200;
+		this.height = 36;
+
+		// transparent hit area
+		this.graphics.beginFill(0x000000, 0.01);
+		this.graphics.drawRect(0, 0, 200, 36);
+		this.graphics.endFill();
+
+		this._bg = new Rect(200, 36, 0x16213e);
+		this._bg.strokeColor = 0x2d3436;
+		this._bg.strokeWeight = 1;
+		this.addChild(this._bg);
+
+		this._lbl = new Label('');
+		this._lbl.x = 12;
+		this._lbl.y = 0;
+		this._lbl.width = 176;
+		this._lbl.height = 36;
+		this._lbl.verticalAlign = 'middle';
+		this._lbl.textColor = 0xdfe6e9;
+		this._lbl.size = 14;
+		this.addChild(this._lbl);
+	}
+
+	protected override dataChanged(): void {
+		this._lbl.text = String(this.data ?? '');
+		// Zebra stripe based on index
+		this._bg.fillColor = this.itemIndex % 2 === 0 ? 0x16213e : 0x0f3460;
+	}
+
+	setSelected(sel: boolean): void {
+		this._bg.fillColor = sel ? 0x6c5ce7 : this.itemIndex % 2 === 0 ? 0x16213e : 0x0f3460;
+	}
+}
 
 // ── Layout constants ─────────────────────────────────────────────────────────
 
@@ -87,6 +136,7 @@ export class UIScene extends Sprite {
 		let ry = 55;
 
 		ry = this._buildPanel(this._col2, ry) + SECTION_GAP;
+		ry = this._buildScroller(this._col2, ry) + SECTION_GAP;
 		this._buildList(this._col2, ry);
 	}
 
@@ -176,44 +226,89 @@ export class UIScene extends Sprite {
 	// ── ProgressBar ────────────────────────────────────────────────────────
 
 	private _buildProgressBar(x: number, y: number): number {
-		const g = sectionGroup('ProgressBar + Animation', x, y);
+		const g = sectionGroup('ProgressBar', x, y);
 		this.addChild(g);
 
-		const pbBg = new Rect(300, 20, 0x2d3436);
-		pbBg.y = HEADER_H;
-		pbBg.strokeColor = 0x636e72;
-		pbBg.strokeWeight = 1;
-		g.addChild(pbBg);
+		// ── Bar 1: LTR animated ───────────────────────────────────────────
+		const pb1 = new ProgressBar();
+		pb1.minimum = 0;
+		pb1.maximum = 100;
+		pb1.value = 0;
+		pb1.width = 260;
+		pb1.height = 20;
+		pb1.y = HEADER_H;
 
-		const pbFill = new Rect(150, 20, 0x6c5ce7);
-		pbFill.y = HEADER_H;
-		g.addChild(pbFill);
+		// Background track
+		const pb1Bg = new Rect(260, 20, 0x2d3436);
+		pb1Bg.strokeColor = 0x636e72;
+		pb1Bg.strokeWeight = 1;
+		pb1.addChild(pb1Bg);
 
-		const pbLabel = new TextField();
-		pbLabel.text = '50%';
-		pbLabel.textColor = 0xffffff;
-		pbLabel.size = 12;
-		pbLabel.x = 310;
-		pbLabel.y = HEADER_H + 3;
-		g.addChild(pbLabel);
+		// Fill thumb — ProgressBar.updateDisplayList positions this
+		const pb1Fill = new Rect(0, 20, 0x6c5ce7);
+		pb1.thumb = pb1Fill;
+		pb1.addChild(pb1Fill);
 
+		// Label
+		const pb1Lbl = new Label('0 / 100');
+		pb1Lbl.x = 270;
+		pb1Lbl.y = 0;
+		pb1Lbl.width = 80;
+		pb1Lbl.height = 20;
+		pb1Lbl.verticalAlign = 'middle';
+		pb1Lbl.textColor = 0xdfe6e9;
+		pb1Lbl.size = 12;
+		pb1.labelDisplay = pb1Lbl;
+		pb1.addChild(pb1Lbl);
+
+		g.addChild(pb1);
+
+		// ── Bar 2: BTT (vertical) ─────────────────────────────────────────
+		const pb2 = new ProgressBar();
+		pb2.minimum = 0;
+		pb2.maximum = 100;
+		pb2.value = 65;
+		pb2.direction = 'btt';
+		pb2.width = 20;
+		pb2.height = 80;
+		pb2.x = 0;
+		pb2.y = HEADER_H + 30;
+
+		const pb2Bg = new Rect(20, 80, 0x2d3436);
+		pb2Bg.strokeColor = 0x636e72;
+		pb2Bg.strokeWeight = 1;
+		pb2.addChild(pb2Bg);
+
+		const pb2Fill = new Rect(20, 0, 0x00b894);
+		pb2.thumb = pb2Fill;
+		pb2.addChild(pb2Fill);
+		g.addChild(pb2);
+
+		const pb2Lbl = new TextField();
+		pb2Lbl.text = '65%';
+		pb2Lbl.textColor = 0xdfe6e9;
+		pb2Lbl.size = 11;
+		pb2Lbl.x = 26;
+		pb2Lbl.y = HEADER_H + 30 + 32;
+		g.addChild(pb2Lbl);
+
+		// Animate pb1
 		let progress = 0;
-		let direction = 1;
+		let dir = 1;
 		setInterval(() => {
-			progress += direction * 0.005;
-			if (progress >= 1) {
-				progress = 1;
-				direction = -1;
+			progress += dir * 0.8;
+			if (progress >= 100) {
+				progress = 100;
+				dir = -1;
 			}
 			if (progress <= 0) {
 				progress = 0;
-				direction = 1;
+				dir = 1;
 			}
-			pbFill.width = 300 * progress;
-			pbLabel.text = `${Math.round(progress * 100)}%`;
+			pb1.value = progress;
 		}, 16);
 
-		return y + HEADER_H + 20;
+		return y + HEADER_H + 30 + 80 + 8;
 	}
 
 	// ── CheckBoxes ─────────────────────────────────────────────────────────
@@ -608,6 +703,75 @@ export class UIScene extends Sprite {
 		return y + HEADER_H + 80 + 28 + 8;
 	}
 
+	// ── Scroller ───────────────────────────────────────────────────────────
+
+	private _buildScroller(x: number, y: number): number {
+		const g = sectionGroup('Scroller', x, y);
+		this.addChild(g);
+
+		const scrollerW = 200;
+		const scrollerH = 120;
+		const rowH = 36;
+		const rowGap = 4;
+		const colors = [0x6c5ce7, 0x00b894, 0xe17055, 0xfeca57, 0x74b9ff, 0xa29bfe, 0xff7675];
+		const totalContentH = colors.length * (rowH + rowGap) - rowGap;
+
+		// Viewport: fixed to visible size, content overflows
+		const viewport = new Group();
+		viewport.width = scrollerW;
+		viewport.height = scrollerH;
+		viewport.scrollEnabled = true;
+
+		// Manually position rows — no layout, so content height is explicit
+		colors.forEach((color, i) => {
+			const row = new Rect(scrollerW, rowH, color);
+			row.y = i * (rowH + rowGap);
+			const lbl = new Label(`Item ${i + 1}`);
+			lbl.x = 10;
+			lbl.y = 0;
+			lbl.width = 180;
+			lbl.height = rowH;
+			lbl.verticalAlign = 'middle';
+			lbl.textColor = 0xffffff;
+			lbl.size = 13;
+			row.addChild(lbl);
+			viewport.addChild(row);
+		});
+
+		// Tell the viewport how tall its content is
+		viewport.setContentSize(scrollerW, totalContentH);
+
+		// Scroller wraps the viewport
+		const scroller = new Scroller();
+		scroller.bounces = true;
+		scroller.width = scrollerW;
+		scroller.height = scrollerH;
+		scroller.y = HEADER_H;
+		// Clip scroller to its own bounds so content doesn't bleed outside
+		scroller.scrollRect = new Rectangle(0, 0, scrollerW, scrollerH);
+		scroller.addChild(viewport);
+		scroller.viewport = viewport;
+
+		// Border behind scroller
+		const border = new Rect(scrollerW, scrollerH, 0x0d1117);
+		border.strokeColor = 0x636e72;
+		border.strokeWeight = 1;
+		border.y = HEADER_H;
+		g.addChild(border);
+
+		g.addChild(scroller);
+
+		const hint = new TextField();
+		hint.text = 'drag to scroll ↕';
+		hint.textColor = 0x636e72;
+		hint.size = 11;
+		hint.x = scrollerW + 8;
+		hint.y = HEADER_H + 4;
+		g.addChild(hint);
+
+		return y + HEADER_H + scrollerH + 4;
+	}
+
 	// ── Panel ──────────────────────────────────────────────────────────────
 
 	private _buildPanel(x: number, y: number): number {
@@ -655,58 +819,43 @@ export class UIScene extends Sprite {
 	// ── List ───────────────────────────────────────────────────────────────
 
 	private _buildList(x: number, y: number): number {
-		const g = sectionGroup('List (tap to select)', x, y);
+		const g = sectionGroup('List + ArrayCollection', x, y);
 		this.addChild(g);
 
 		const items = ['Apple', 'Banana', 'Cherry', 'Durian', 'Elderberry'];
-		const rowH = 36;
+		const data = new ArrayCollection(items);
 
 		const selTf = new TextField();
 		selTf.text = 'Selected: none';
 		selTf.textColor = 0xdfe6e9;
 		selTf.size = 12;
-		selTf.x = 0;
+		selTf.x = 220;
 		selTf.y = 0;
 		g.addChild(selTf);
 
-		const rows: Rect[] = [];
+		const list = new List();
+		list.dataProvider = data;
+		list.itemRenderer = TextItemRenderer;
+		list.useVirtualLayout = false;
+		list.width = 200;
+		list.height = items.length * 36;
+		list.y = HEADER_H;
+		g.addChild(list);
 
-		items.forEach((item, i) => {
-			const row = new Sprite();
-			row.y = HEADER_H + i * rowH;
-			row.touchEnabled = true;
+		let lastSelected = -1;
 
-			const bg = new Rect(200, rowH, i % 2 === 0 ? 0x16213e : 0x0f3460);
-			bg.strokeColor = 0x2d3436;
-			bg.strokeWeight = 1;
-			row.addChild(bg);
-			rows.push(bg);
+		list.addEventListener(ItemTapEvent.ITEM_TAP, (e: Event) => {
+			const ite = e as ItemTapEvent;
+			selTf.text = `Selected: ${ite.item}`;
 
-			// transparent hit area
-			row.graphics.beginFill(0x000000, 0.01);
-			row.graphics.drawRect(0, 0, 200, rowH);
-			row.graphics.endFill();
-
-			const lbl = new Label(item);
-			lbl.x = 12;
-			lbl.y = 0;
-			lbl.width = 176;
-			lbl.height = rowH;
-			lbl.verticalAlign = 'middle';
-			lbl.textColor = 0xdfe6e9;
-			lbl.size = 14;
-			row.addChild(lbl);
-
-			row.addEventListener(TouchEvent.TOUCH_TAP, () => {
-				selTf.text = `Selected: ${item}`;
-				rows.forEach((r, idx) => {
-					r.fillColor = idx === i ? 0x6c5ce7 : idx % 2 === 0 ? 0x16213e : 0x0f3460;
-				});
-			});
-
-			g.addChild(row);
+			// Update highlight
+			for (let i = 0; i < items.length; i++) {
+				const r = list.getElementAt(i) as TextItemRenderer | undefined;
+				if (r) r.setSelected(i === ite.itemIndex);
+			}
+			lastSelected = ite.itemIndex;
 		});
 
-		return y + HEADER_H + items.length * rowH;
+		return y + HEADER_H + items.length * 36;
 	}
 }

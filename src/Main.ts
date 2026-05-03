@@ -1,30 +1,25 @@
-import {
-	createPlayer,
-	Sprite,
-	Shape,
-	TextField,
-	TouchEvent,
-	DisplayObject,
-	Stage,
-} from '@blakron/core';
+import { createPlayer, Sprite, Shape, TextField, TouchEvent, DisplayObject, Stage } from '@blakron/core';
 import { CoreScene } from './scenes/CoreScene.js';
 import { GameScene } from './scenes/GameScene.js';
 import { UIScene } from './scenes/UIScene.js';
+import { EXMLScene } from './scenes/EXMLScene.js';
 
 // ── Scene Navigation ─────────────────────────────────────────────────────────
 
-type SceneName = 'core' | 'game' | 'ui';
+type SceneName = 'core' | 'game' | 'ui' | 'exml';
 
 const SCENE_LABELS: Record<SceneName, string> = {
 	core: 'Core',
 	game: 'Game',
 	ui: 'UI',
+	exml: 'EXML',
 };
 
 const SCENE_COLORS: Record<SceneName, number> = {
 	core: 0x6c5ce7,
 	game: 0x00b894,
 	ui: 0xe17055,
+	exml: 0xfdcb6e,
 };
 
 // ── Main ──────────────────────────────────────────────────────────────────────
@@ -54,7 +49,7 @@ root.addChild(tabBar);
 // Tab background
 const tabBg = new Shape();
 tabBg.graphics.beginFill(0x16213e);
-tabBg.graphics.drawRect(0, 0, 480, 44);
+tabBg.graphics.drawRect(0, 0, window.innerWidth, 44);
 tabBg.graphics.endFill();
 tabBar.addChild(tabBg);
 
@@ -90,9 +85,11 @@ function createTabButton(name: SceneName, x: number): void {
 	label.size = 14;
 	label.bold = isActive;
 	label.x = 0;
-	label.y = 8;
+	label.y = 0;
 	label.width = w;
+	label.height = h;
 	label.textAlign = 'center';
+	label.verticalAlign = 'middle';
 	tab.addChild(label);
 
 	// Tap handler
@@ -112,8 +109,8 @@ function switchScene(name: SceneName): void {
 		tabBar.removeChildAt(tabBar.numChildren - 1);
 	}
 
-	const tabs: SceneName[] = ['core', 'game', 'ui'];
-	tabs.forEach((t, i) => createTabButton(t, 20 + i * 150));
+	const tabs: SceneName[] = ['core', 'game', 'ui', 'exml'];
+	tabs.forEach((t, i) => createTabButton(t, 20 + i * 120));
 
 	// Remove old scene
 	if (currentScene) {
@@ -123,7 +120,7 @@ function switchScene(name: SceneName): void {
 	// Create new scene
 	switch (name) {
 		case 'core':
-			currentScene = new CoreScene();
+			currentScene = new CoreScene(window.innerWidth);
 			(currentScene as CoreScene).create();
 			break;
 		case 'game':
@@ -131,8 +128,12 @@ function switchScene(name: SceneName): void {
 			(currentScene as GameScene).create();
 			break;
 		case 'ui':
-			currentScene = new UIScene();
+			currentScene = new UIScene(window.innerWidth, window.innerHeight - 44);
 			(currentScene as UIScene).create();
+			break;
+		case 'exml':
+			currentScene = new EXMLScene(window.innerWidth, window.innerHeight - 44);
+			(currentScene as EXMLScene).create();
 			break;
 	}
 
@@ -148,7 +149,7 @@ const fpsText = new TextField();
 fpsText.text = 'FPS: --';
 fpsText.textColor = 0x636e72;
 fpsText.size = 11;
-fpsText.x = 400;
+fpsText.x = window.innerWidth - 80;
 fpsText.y = 14;
 tabBar.addChild(fpsText);
 

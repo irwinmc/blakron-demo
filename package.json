@@ -8,7 +8,7 @@
 		"build": "vite build"
 	},
 	"dependencies": {
-		"@blakron/core": "^0.3.8",
+		"@blakron/core": "^0.3.10",
 		"@blakron/game": "^0.1.3",
 		"@blakron/ui": "^0.2.1"
 	},

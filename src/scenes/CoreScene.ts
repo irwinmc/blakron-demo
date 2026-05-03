@@ -15,9 +15,446 @@ import {
 	Event,
 } from '@blakron/core';
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// ── Layout constants ──────────────────────────────────────────────────────────
 
-/** Generate a gradient texture from a canvas */
+const PAD = 20; // outer padding & gutter
+const LABEL_H = 24; // section label height
+const CELL_H = 160; // content area height per cell
+const ROW_GAP = 16; // vertical gap between rows
+const TITLE_H = 52; // top title area
+
+// ── CoreScene ─────────────────────────────────────────────────────────────────
+
+export class CoreScene extends Sprite {
+	private readonly _sw: number; // screen width
+	private readonly _colW: number; // column width (2-col layout)
+
+	public constructor(screenWidth = 800) {
+		super();
+		this._sw = screenWidth;
+		this._colW = Math.floor((screenWidth - PAD * 3) / 2);
+	}
+
+	/** x origin of column (0 or 1) */
+	private cx(col: number): number {
+		return PAD + col * (this._colW + PAD);
+	}
+
+	/** y origin of a row's content area (below its label) */
+	private ry(row: number): number {
+		return TITLE_H + row * (LABEL_H + CELL_H + ROW_GAP) + LABEL_H;
+	}
+
+	/** Add a section label */
+	private label(text: string, col: number, row: number): void {
+		const tf = new TextField();
+		tf.text = text;
+		tf.textColor = 0xb2bec3;
+		tf.size = 13;
+		tf.bold = true;
+		tf.x = this.cx(col);
+		tf.y = TITLE_H + row * (LABEL_H + CELL_H + ROW_GAP);
+		tf.width = this._colW;
+		tf.height = LABEL_H;
+		tf.verticalAlign = 'middle';
+		this.addChild(tf);
+	}
+
+	public create(): void {
+		// ── Title ─────────────────────────────────────────────────────────────
+		const title = new TextField();
+		title.text = 'Core Scene';
+		title.textColor = 0xffffff;
+		title.size = 24;
+		title.bold = true;
+		title.x = PAD;
+		title.y = 12;
+		this.addChild(title);
+
+		// Row 0: Shapes | Graphics & Bitmap
+		this._buildShapes(0, 0);
+		this._buildGraphicsAndBitmap(1, 0);
+
+		// Row 1: TextField & Filters | Events & RenderGroup
+		this._buildTextAndFilters(0, 1);
+		this._buildEventsAndRenderGroup(1, 1);
+
+		// Row 2: Image Loading (full width)
+		this._buildImageLoading(2);
+	}
+
+	// ── Row 0 Col 0 — Shapes ─────────────────────────────────────────────────
+
+	private _buildShapes(col: number, row: number): void {
+		this.label('Shapes', col, row);
+		const ox = this.cx(col);
+		const oy = this.ry(row);
+		const cw = this._colW;
+
+		// 红色矩形
+		const rect = new Shape();
+		rect.graphics.beginFill(0xff4444);
+		rect.graphics.drawRect(0, 0, 100, 60);
+		rect.graphics.endFill();
+		rect.x = ox;
+		rect.y = oy;
+		this.addChild(rect);
+
+		// 蓝色圆
+		const circle = new Shape();
+		circle.graphics.beginFill(0x4488ff);
+		circle.graphics.drawCircle(0, 0, 36);
+		circle.graphics.endFill();
+		circle.x = ox + 150;
+		circle.y = oy + 36;
+		this.addChild(circle);
+
+		// 绿色描边圆角矩形
+		const roundRect = new Shape();
+		roundRect.graphics.lineStyle(3, 0x44ff88);
+		roundRect.graphics.beginFill(0x224422, 0.5);
+		roundRect.graphics.drawRoundRect(0, 0, Math.min(200, cw - 20), 50, 12);
+		roundRect.graphics.endFill();
+		roundRect.x = ox;
+		roundRect.y = oy + 80;
+		this.addChild(roundRect);
+
+		// 椭圆
+		const ellipse = new Shape();
+		ellipse.graphics.beginFill(0xfeca57, 0.8);
+		ellipse.graphics.drawEllipse(0, 0, 120, 50);
+		ellipse.graphics.endFill();
+		ellipse.x = ox + Math.max(0, cw - 140);
+		ellipse.y = oy + 80;
+		this.addChild(ellipse);
+	}
+
+	// ── Row 0 Col 1 — Graphics & Bitmap ──────────────────────────────────────
+
+	private _buildGraphicsAndBitmap(col: number, row: number): void {
+		this.label('Graphics & Bitmap', col, row);
+		const ox = this.cx(col);
+		const oy = this.ry(row);
+
+		// 弧线
+		const arc = new Shape();
+		arc.graphics.lineStyle(4, 0xff66ff);
+		arc.graphics.drawArc(50, 50, 44, 0, Math.PI * 1.5, false);
+		arc.x = ox;
+		arc.y = oy;
+		this.addChild(arc);
+
+		// 渐变位图
+		const gradTex = makeGradientTexture(80, 80, ['#ff9a9e', '#fad0c4', '#ffecd2']);
+		const gradBmp = new Bitmap(gradTex);
+		gradBmp.x = ox + 120;
+		gradBmp.y = oy;
+		this.addChild(gradBmp);
+
+		// 纯色位图 × 缩放
+		const solidTex = makeColorTexture(32, 32, '#6c5ce7');
+		const solidBmp = new Bitmap(solidTex);
+		solidBmp.x = ox + 210;
+		solidBmp.y = oy;
+		solidBmp.scaleX = 2.5;
+		solidBmp.scaleY = 2.5;
+		this.addChild(solidBmp);
+
+		// 旋转渐变位图
+		const tex3 = makeGradientTexture(72, 72, ['#00b894', '#00cec9', '#0984e3']);
+		const bmp3 = new Bitmap(tex3);
+		bmp3.x = ox + 120;
+		bmp3.y = oy + 88;
+		bmp3.rotation = 15;
+		this.addChild(bmp3);
+	}
+
+	// ── Row 1 Col 0 — TextField & Filters ────────────────────────────────────
+
+	private _buildTextAndFilters(col: number, row: number): void {
+		this.label('TextField & Filters', col, row);
+		const ox = this.cx(col);
+		const oy = this.ry(row);
+
+		// TextFields
+		const tf1 = new TextField();
+		tf1.text = 'Hello Blakron!';
+		tf1.textColor = 0xfeca57;
+		tf1.size = 22;
+		tf1.bold = true;
+		tf1.x = ox;
+		tf1.y = oy;
+		this.addChild(tf1);
+
+		const tf2 = new TextField();
+		tf2.text = 'Multi-line\ntext field';
+		tf2.textColor = 0xdfe6e9;
+		tf2.size = 16;
+		tf2.x = ox;
+		tf2.y = oy + 36;
+		this.addChild(tf2);
+
+		const tf3 = new TextField();
+		tf3.text = '描边文字';
+		tf3.textColor = 0xffffff;
+		tf3.size = 20;
+		tf3.stroke = 2;
+		tf3.strokeColor = 0x000000;
+		tf3.x = ox + 180;
+		tf3.y = oy + 36;
+		this.addChild(tf3);
+
+		// Filters
+		const blurTarget = new Shape();
+		blurTarget.graphics.beginFill(0xe17055);
+		blurTarget.graphics.drawCircle(0, 0, 28);
+		blurTarget.graphics.endFill();
+		blurTarget.x = ox + 28;
+		blurTarget.y = oy + 110;
+		blurTarget.filters = [new BlurFilter(6, 6)];
+		this.addChild(blurTarget);
+
+		const glowTarget = new Shape();
+		glowTarget.graphics.beginFill(0x6c5ce7);
+		glowTarget.graphics.drawRect(0, 0, 70, 40);
+		glowTarget.graphics.endFill();
+		glowTarget.x = ox + 80;
+		glowTarget.y = oy + 96;
+		glowTarget.filters = [new GlowFilter(0x00ff88, 0.8, 10, 10, 3)];
+		this.addChild(glowTarget);
+
+		const colorTarget = new Bitmap(makeGradientTexture(80, 36, ['#ff6348', '#ffa502']));
+		colorTarget.x = ox + 180;
+		colorTarget.y = oy + 100;
+		const gray = new ColorMatrixFilter();
+		gray.matrix = [0.3, 0.6, 0.1, 0, 0, 0.3, 0.6, 0.1, 0, 0, 0.3, 0.6, 0.1, 0, 0, 0, 0, 0, 1, 0];
+		colorTarget.filters = [gray];
+		this.addChild(colorTarget);
+	}
+
+	// ── Row 1 Col 1 — Events & RenderGroup ───────────────────────────────────
+
+	private _buildEventsAndRenderGroup(col: number, row: number): void {
+		this.label('Events & RenderGroup', col, row);
+		const ox = this.cx(col);
+		const oy = this.ry(row);
+		const cw = this._colW;
+
+		// Tap button
+		const btnW = Math.min(200, cw / 2 - 10);
+		const box = new Sprite();
+		box.x = ox;
+		box.y = oy + 10;
+		box.touchEnabled = true;
+
+		const bg = new Shape();
+		bg.graphics.beginFill(0x00b894);
+		bg.graphics.drawRoundRect(0, 0, btnW, 44, 8);
+		bg.graphics.endFill();
+		box.addChild(bg);
+
+		const btnLabel = new TextField();
+		btnLabel.text = 'Tap me! (0)';
+		btnLabel.textColor = 0xffffff;
+		btnLabel.size = 16;
+		btnLabel.x = 0;
+		btnLabel.y = 0;
+		btnLabel.width = btnW;
+		btnLabel.height = 44;
+		btnLabel.textAlign = 'center';
+		btnLabel.verticalAlign = 'middle';
+		box.addChild(btnLabel);
+
+		let count = 0;
+		box.addEventListener(TouchEvent.TOUCH_TAP, () => {
+			count++;
+			btnLabel.text = `Tap me! (${count})`;
+			box.alpha = 0.6;
+			setTimeout(() => {
+				box.alpha = 1.0;
+			}, 100);
+		});
+		this.addChild(box);
+
+		// RenderGroup
+		const group = new Sprite();
+		group.isRenderGroup = true;
+		group.x = ox + cw / 2 + 10;
+		group.y = oy;
+
+		const colors = [0x636e72, 0x2d3436, 0x74b9ff, 0xa29bfe];
+		for (let i = 0; i < 4; i++) {
+			const tile = new Shape();
+			tile.graphics.beginFill(colors[i]);
+			tile.graphics.drawRect(0, 0, 52, 52);
+			tile.graphics.endFill();
+			tile.x = (i % 2) * 56;
+			tile.y = Math.floor(i / 2) * 56;
+			group.addChild(tile);
+		}
+
+		const rgLabel = new TextField();
+		rgLabel.text = 'RenderGroup';
+		rgLabel.textColor = 0xb2bec3;
+		rgLabel.size = 12;
+		rgLabel.y = 116;
+		group.addChild(rgLabel);
+
+		this.addChild(group);
+	}
+
+	// ── Row 2 — Image Loading (full width, 2 columns inside) ─────────────────
+
+	private _buildImageLoading(row: number): void {
+		// Full-width label
+		const sectionTf = new TextField();
+		sectionTf.text = 'Image Loading';
+		sectionTf.textColor = 0xb2bec3;
+		sectionTf.size = 13;
+		sectionTf.bold = true;
+		sectionTf.x = PAD;
+		sectionTf.y = TITLE_H + row * (LABEL_H + CELL_H + ROW_GAP);
+		sectionTf.width = this._sw - PAD * 2;
+		sectionTf.height = LABEL_H;
+		sectionTf.verticalAlign = 'middle';
+		this.addChild(sectionTf);
+
+		const oy = this.ry(row);
+		const imgSize = Math.min(CELL_H - 30, 120);
+
+		// ── Left: ImageLoader single ──────────────────────────────────────────
+		const lox = PAD;
+
+		const loaderCaption = new TextField();
+		loaderCaption.text = 'ImageLoader (single)';
+		loaderCaption.textColor = 0x636e72;
+		loaderCaption.size = 12;
+		loaderCaption.x = lox;
+		loaderCaption.y = oy;
+		this.addChild(loaderCaption);
+
+		const placeholder = new Shape();
+		placeholder.graphics.beginFill(0x2d3436);
+		placeholder.graphics.drawRoundRect(0, 0, imgSize, imgSize, 8);
+		placeholder.graphics.endFill();
+		placeholder.x = lox;
+		placeholder.y = oy + 20;
+		this.addChild(placeholder);
+
+		const statusTf = new TextField();
+		statusTf.text = 'Loading...';
+		statusTf.textColor = 0x636e72;
+		statusTf.size = 12;
+		statusTf.x = lox + imgSize + 12;
+		statusTf.y = oy + 20;
+		this.addChild(statusTf);
+
+		const loader = new ImageLoader();
+		loader.addEventListener(Event.COMPLETE, () => {
+			if (!loader.data) return;
+			this.removeChild(placeholder);
+			const tex = new Texture();
+			tex.setBitmapData(loader.data);
+			const bmp = new Bitmap(tex);
+			bmp.x = lox;
+			bmp.y = oy + 20;
+			bmp.width = imgSize;
+			bmp.height = imgSize;
+			this.addChild(bmp);
+			statusTf.text = `✓ Loaded\n${loader.data.width}×${loader.data.height}`;
+			statusTf.textColor = 0x00b894;
+		});
+		loader.addEventListener('ioError', () => {
+			statusTf.text = '✗ Load failed';
+			statusTf.textColor = 0xe17055;
+		});
+		loader.load('/assets/img-red.svg');
+
+		// ── Right: resource batch ─────────────────────────────────────────────
+		const rox = this.cx(1);
+
+		const batchCaption = new TextField();
+		batchCaption.text = 'resource.load (batch + progress)';
+		batchCaption.textColor = 0x636e72;
+		batchCaption.size = 12;
+		batchCaption.x = rox;
+		batchCaption.y = oy;
+		this.addChild(batchCaption);
+
+		// Progress bar
+		const pbBg = new Shape();
+		pbBg.graphics.beginFill(0x2d3436);
+		pbBg.graphics.drawRoundRect(0, 0, this._colW, 8, 4);
+		pbBg.graphics.endFill();
+		pbBg.x = rox;
+		pbBg.y = oy + 22;
+		this.addChild(pbBg);
+
+		const pbFill = new Shape();
+		pbFill.graphics.beginFill(0x6c5ce7);
+		pbFill.graphics.drawRoundRect(0, 0, 0, 8, 4);
+		pbFill.graphics.endFill();
+		pbFill.x = rox;
+		pbFill.y = oy + 22;
+		this.addChild(pbFill);
+
+		const batchStatus = new TextField();
+		batchStatus.text = '0 / 2';
+		batchStatus.textColor = 0x636e72;
+		batchStatus.size = 12;
+		batchStatus.x = rox;
+		batchStatus.y = oy + 36;
+		this.addChild(batchStatus);
+
+		// Image slots
+		const names = ['img-green', 'img-blue'];
+		const slots: Shape[] = [];
+		names.forEach((_, i) => {
+			const slot = new Shape();
+			slot.graphics.beginFill(0x2d3436);
+			slot.graphics.drawRoundRect(0, 0, imgSize, imgSize, 8);
+			slot.graphics.endFill();
+			slot.x = rox + i * (imgSize + 12);
+			slot.y = oy + 56;
+			this.addChild(slot);
+			slots.push(slot);
+		});
+
+		resource.addResource({ name: 'img-green', url: '/assets/img-green.svg', type: ResourceType.Image });
+		resource.addResource({ name: 'img-blue', url: '/assets/img-blue.svg', type: ResourceType.Image });
+
+		let loadedCount = 0;
+		(async () => {
+			for (let i = 0; i < names.length; i++) {
+				await resource.load(names[i]);
+				loadedCount++;
+				const pct = loadedCount / names.length;
+				pbFill.graphics.clear();
+				pbFill.graphics.beginFill(0x6c5ce7);
+				pbFill.graphics.drawRoundRect(0, 0, Math.round(this._colW * pct), 8, 4);
+				pbFill.graphics.endFill();
+				batchStatus.text = `${loadedCount} / ${names.length}`;
+
+				// Show loaded image
+				const tex = resource.get<Texture>(names[i]);
+				if (tex) {
+					this.removeChild(slots[i]);
+					const bmp = new Bitmap(tex);
+					bmp.x = rox + i * (imgSize + 12);
+					bmp.y = oy + 56;
+					bmp.width = imgSize;
+					bmp.height = imgSize;
+					this.addChild(bmp);
+				}
+			}
+			batchStatus.text = 'All loaded ✓';
+			batchStatus.textColor = 0x00b894;
+		})();
+	}
+}
+
+// ── Texture helpers ───────────────────────────────────────────────────────────
+
 function makeGradientTexture(w: number, h: number, colors: string[]): Texture {
 	const canvas = document.createElement('canvas');
 	canvas.width = w;
@@ -33,7 +470,6 @@ function makeGradientTexture(w: number, h: number, colors: string[]): Texture {
 	return tex;
 }
 
-/** Generate a solid color texture */
 function makeColorTexture(w: number, h: number, color: string): Texture {
 	const canvas = document.createElement('canvas');
 	canvas.width = w;
@@ -45,399 +481,4 @@ function makeColorTexture(w: number, h: number, color: string): Texture {
 	const tex = new Texture();
 	tex.setBitmapData(bd);
 	return tex;
-}
-
-// ── CoreScene ────────────────────────────────────────────────────────────────
-
-export class CoreScene extends Sprite {
-	private readonly _title: TextField;
-
-	public constructor() {
-		super();
-		this._title = new TextField();
-	}
-
-	public create(): void {
-		// Title
-		this._title.text = 'Core Scene';
-		this._title.textColor = 0xffffff;
-		this._title.size = 28;
-		this._title.bold = true;
-		this._title.x = 20;
-		this._title.y = 10;
-		this.addChild(this._title);
-
-		this._buildShapes();
-		this._buildGraphics();
-		this._buildBitmaps();
-		this._buildTextFields();
-		this._buildFilters();
-		this._buildInteractiveSprite();
-		this._buildRenderGroup();
-		this._buildImageLoading();
-	}
-
-	// ── Shape (矢量矩形 / 圆形) ───────────────────────────────────────────
-
-	private _buildShapes(): void {
-		// 红色矩形
-		const rect = new Shape();
-		rect.graphics.beginFill(0xff4444);
-		rect.graphics.drawRect(0, 0, 80, 60);
-		rect.graphics.endFill();
-		rect.x = 20;
-		rect.y = 60;
-		this.addChild(rect);
-
-		// 蓝色圆
-		const circle = new Shape();
-		circle.graphics.beginFill(0x4488ff);
-		circle.graphics.drawCircle(0, 0, 35);
-		circle.graphics.endFill();
-		circle.x = 150;
-		circle.y = 90;
-		this.addChild(circle);
-
-		// 绿色描边圆角矩形
-		const roundRect = new Shape();
-		roundRect.graphics.lineStyle(3, 0x44ff88);
-		roundRect.graphics.beginFill(0x224422, 0.5);
-		roundRect.graphics.drawRoundRect(0, 0, 100, 50, 12);
-		roundRect.graphics.endFill();
-		roundRect.x = 220;
-		roundRect.y = 65;
-		this.addChild(roundRect);
-	}
-
-	// ── Graphics 渐变 / 弧线 ──────────────────────────────────────────────
-
-	private _buildGraphics(): void {
-		// Multi-color filled shape
-		const shape = new Shape();
-		shape.graphics.beginFill(0xfeca57, 0.8);
-		shape.graphics.drawEllipse(0, 0, 100, 50);
-		shape.graphics.endFill();
-		shape.x = 20;
-		shape.y = 150;
-		this.addChild(shape);
-
-		// 弧线
-		const arc = new Shape();
-		arc.graphics.lineStyle(4, 0xff66ff);
-		arc.graphics.drawArc(50, 50, 40, 0, Math.PI * 1.5, false);
-		arc.x = 160;
-		arc.y = 140;
-		this.addChild(arc);
-	}
-
-	// ── Bitmap (位图渲染) ──────────────────────────────────────────────────
-
-	private _buildBitmaps(): void {
-		// 渐变位图
-		const gradTex = makeGradientTexture(64, 64, ['#ff9a9e', '#fad0c4', '#ffecd2']);
-		const gradBmp = new Bitmap(gradTex);
-		gradBmp.x = 20;
-		gradBmp.y = 230;
-		this.addChild(gradBmp);
-
-		// 纯色位图 + 缩放
-		const solidTex = makeColorTexture(32, 32, '#6c5ce7');
-		const solidBmp = new Bitmap(solidTex);
-		solidBmp.x = 110;
-		solidBmp.y = 230;
-		solidBmp.scaleX = 2;
-		solidBmp.scaleY = 2;
-		this.addChild(solidBmp);
-
-		// 另一个渐变位图
-		const tex3 = makeGradientTexture(64, 64, ['#00b894', '#00cec9', '#0984e3']);
-		const bmp3 = new Bitmap(tex3);
-		bmp3.x = 200;
-		bmp3.y = 230;
-		bmp3.rotation = 15;
-		this.addChild(bmp3);
-	}
-
-	// ── TextField ──────────────────────────────────────────────────────────
-
-	private _buildTextFields(): void {
-		const tf = new TextField();
-		tf.text = 'Hello Blakron!';
-		tf.textColor = 0xfeca57;
-		tf.size = 24;
-		tf.bold = true;
-		tf.x = 20;
-		tf.y = 330;
-		this.addChild(tf);
-
-		const tf2 = new TextField();
-		tf2.text = 'Multi-line\ntext field\nwith \\n';
-		tf2.textColor = 0xdfe6e9;
-		tf2.size = 16;
-		tf2.x = 20;
-		tf2.y = 370;
-		this.addChild(tf2);
-
-		const tf3 = new TextField();
-		tf3.text = '描边文字';
-		tf3.textColor = 0xffffff;
-		tf3.size = 22;
-		tf3.stroke = 2;
-		tf3.strokeColor = 0x000000;
-		tf3.x = 200;
-		tf3.y = 370;
-		this.addChild(tf3);
-	}
-
-	// ── Filters ────────────────────────────────────────────────────────────
-
-	private _buildFilters(): void {
-		// Blur filter
-		const blurTarget = new Shape();
-		blurTarget.graphics.beginFill(0xe17055);
-		blurTarget.graphics.drawCircle(0, 0, 30);
-		blurTarget.graphics.endFill();
-		blurTarget.x = 60;
-		blurTarget.y = 480;
-		blurTarget.filters = [new BlurFilter(6, 6)];
-		this.addChild(blurTarget);
-
-		// Glow filter
-		const glowTarget = new Shape();
-		glowTarget.graphics.beginFill(0x6c5ce7);
-		glowTarget.graphics.drawRect(0, 0, 60, 40);
-		glowTarget.graphics.endFill();
-		glowTarget.x = 120;
-		glowTarget.y = 460;
-		glowTarget.filters = [new GlowFilter(0x00ff88, 0.8, 10, 10, 3)];
-		this.addChild(glowTarget);
-
-		// ColorMatrixFilter (灰度)
-		const colorTarget = new Bitmap(makeGradientTexture(60, 40, ['#ff6348', '#ffa502']));
-		colorTarget.x = 220;
-		colorTarget.y = 460;
-		const gray = new ColorMatrixFilter();
-		gray.matrix = [0.3, 0.6, 0.1, 0, 0, 0.3, 0.6, 0.1, 0, 0, 0.3, 0.6, 0.1, 0, 0, 0, 0, 0, 1, 0];
-		colorTarget.filters = [gray];
-		this.addChild(colorTarget);
-	}
-
-	// ── Interactive sprite (事件) ──────────────────────────────────────────
-
-	private _buildInteractiveSprite(): void {
-		const box = new Sprite();
-		box.x = 20;
-		box.y = 540;
-		box.touchEnabled = true;
-
-		const bg = new Shape();
-		bg.graphics.beginFill(0x00b894);
-		bg.graphics.drawRoundRect(0, 0, 140, 36, 8);
-		bg.graphics.endFill();
-		box.addChild(bg);
-
-		const label = new TextField();
-		label.text = 'Tap me! (0)';
-		label.textColor = 0xffffff;
-		label.size = 16;
-		label.x = 12;
-		label.y = 8;
-		box.addChild(label);
-
-		let count = 0;
-		box.addEventListener(TouchEvent.TOUCH_TAP, () => {
-			count++;
-			label.text = `Tap me! (${count})`;
-			// Flash effect
-			box.alpha = 0.6;
-			setTimeout(() => {
-				box.alpha = 1.0;
-			}, 100);
-		});
-
-		this.addChild(box);
-	}
-
-	// ── RenderGroup (静态子树) ─────────────────────────────────────────────
-
-	private _buildRenderGroup(): void {
-		const group = new Sprite();
-		group.isRenderGroup = true;
-		group.x = 320;
-		group.y = 60;
-
-		for (let i = 0; i < 4; i++) {
-			const tile = new Shape();
-			tile.graphics.beginFill([0x636e72, 0x2d3436, 0x74b9ff, 0xa29bfe][i]);
-			tile.graphics.drawRect(0, 0, 40, 40);
-			tile.graphics.endFill();
-			tile.x = (i % 2) * 44;
-			tile.y = Math.floor(i / 2) * 44;
-			group.addChild(tile);
-		}
-
-		const label = new TextField();
-		label.text = 'RenderGroup';
-		label.textColor = 0xb2bec3;
-		label.size = 12;
-		label.y = 96;
-		group.addChild(label);
-
-		this.addChild(group);
-	}
-
-	// ── Image Loading ──────────────────────────────────────────────────────
-
-	private _buildImageLoading(): void {
-		// Section title
-		const sectionLabel = new TextField();
-		sectionLabel.text = 'Image Loading';
-		sectionLabel.textColor = 0xb2bec3;
-		sectionLabel.size = 14;
-		sectionLabel.x = 20;
-		sectionLabel.y = 620;
-		this.addChild(sectionLabel);
-
-		// ── Part 1: ImageLoader (single image, manual) ──────────────────────
-
-		const loaderLabel = new TextField();
-		loaderLabel.text = 'ImageLoader (single):';
-		loaderLabel.textColor = 0x636e72;
-		loaderLabel.size = 12;
-		loaderLabel.x = 20;
-		loaderLabel.y = 645;
-		this.addChild(loaderLabel);
-
-		// Placeholder shown while loading
-		const placeholder = new Shape();
-		placeholder.graphics.beginFill(0x2d3436);
-		placeholder.graphics.drawRoundRect(0, 0, 128, 128, 8);
-		placeholder.graphics.endFill();
-		placeholder.x = 20;
-		placeholder.y = 665;
-		this.addChild(placeholder);
-
-		const statusTf = new TextField();
-		statusTf.text = 'Loading...';
-		statusTf.textColor = 0x636e72;
-		statusTf.size = 12;
-		statusTf.x = 20;
-		statusTf.y = 800;
-		this.addChild(statusTf);
-
-		const loader = new ImageLoader();
-		loader.addEventListener(Event.COMPLETE, () => {
-			if (!loader.data) return;
-			// Remove placeholder
-			this.removeChild(placeholder);
-			// Create texture + bitmap
-			const tex = new Texture();
-			tex.setBitmapData(loader.data);
-			const bmp = new Bitmap(tex);
-			bmp.x = 20;
-			bmp.y = 665;
-			bmp.width = 128;
-			bmp.height = 128;
-			this.addChild(bmp);
-			statusTf.text = `Loaded ✓  ${loader.data.width}×${loader.data.height}`;
-			statusTf.textColor = 0x00b894;
-		});
-		loader.addEventListener('ioError', () => {
-			statusTf.text = 'Load failed ✗';
-			statusTf.textColor = 0xe17055;
-		});
-		loader.load('/assets/img-red.svg');
-
-		// ── Part 2: resource manager (batch load with progress) ────────────
-
-		const batchLabel = new TextField();
-		batchLabel.text = 'resource.loadGroup (batch):';
-		batchLabel.textColor = 0x636e72;
-		batchLabel.size = 12;
-		batchLabel.x = 170;
-		batchLabel.y = 645;
-		this.addChild(batchLabel);
-
-		// Progress bar background
-		const pbBg = new Shape();
-		pbBg.graphics.beginFill(0x2d3436);
-		pbBg.graphics.drawRoundRect(0, 0, 240, 10, 4);
-		pbBg.graphics.endFill();
-		pbBg.x = 170;
-		pbBg.y = 665;
-		this.addChild(pbBg);
-
-		// Progress bar fill
-		const pbFill = new Shape();
-		pbFill.graphics.beginFill(0x6c5ce7);
-		pbFill.graphics.drawRoundRect(0, 0, 0, 10, 4);
-		pbFill.graphics.endFill();
-		pbFill.x = 170;
-		pbFill.y = 665;
-		this.addChild(pbFill);
-
-		const batchStatus = new TextField();
-		batchStatus.text = '0 / 2';
-		batchStatus.textColor = 0x636e72;
-		batchStatus.size = 12;
-		batchStatus.x = 170;
-		batchStatus.y = 680;
-		this.addChild(batchStatus);
-
-		// Slots for the two batch-loaded images
-		const slots: Bitmap[] = [];
-		for (let i = 0; i < 2; i++) {
-			const slot = new Shape();
-			slot.graphics.beginFill(0x2d3436);
-			slot.graphics.drawRoundRect(0, 0, 110, 110, 8);
-			slot.graphics.endFill();
-			slot.x = 170 + i * 120;
-			slot.y = 700;
-			this.addChild(slot);
-		}
-
-		// Register resources and load
-		resource.addResource({ name: 'img-green', url: '/assets/img-green.svg', type: ResourceType.Image });
-		resource.addResource({ name: 'img-blue', url: '/assets/img-blue.svg', type: ResourceType.Image });
-
-		// Manually load both with progress tracking
-		let loadedCount = 0;
-		const total = 2;
-		const names = ['img-green', 'img-blue'];
-
-		const updateProgress = (n: number) => {
-			const pct = n / total;
-			// Redraw fill bar
-			pbFill.graphics.clear();
-			pbFill.graphics.beginFill(0x6c5ce7);
-			pbFill.graphics.drawRoundRect(0, 0, Math.round(240 * pct), 10, 4);
-			pbFill.graphics.endFill();
-			batchStatus.text = `${n} / ${total}`;
-		};
-
-		const showBatchImages = () => {
-			names.forEach((name, i) => {
-				const tex = resource.get<Texture>(name);
-				if (!tex) return;
-				const bmp = new Bitmap(tex);
-				bmp.x = 170 + i * 120;
-				bmp.y = 700;
-				bmp.width = 110;
-				bmp.height = 110;
-				this.addChild(bmp);
-			});
-			batchStatus.text = 'All loaded ✓';
-			batchStatus.textColor = 0x00b894;
-		};
-
-		// Load sequentially to show progress
-		(async () => {
-			for (const name of names) {
-				await resource.load(name);
-				loadedCount++;
-				updateProgress(loadedCount);
-			}
-			showBatchImages();
-		})();
-	}
 }

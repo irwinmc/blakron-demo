@@ -5,21 +5,22 @@ import {
 	Rect,
 	Button,
 	Image,
-	ProgressBar,
 	CheckBox,
 	RadioButton,
-	VerticalLayout,
-	HorizontalLayout,
-	BasicLayout,
 	ArrayCollection,
-	UIEvent,
+	HSlider,
+	VSlider,
+	ToggleSwitch,
+	ViewStack,
+	Panel,
+	List,
+	ItemRenderer,
+	ItemTapEvent,
 } from '@blakron/ui';
 import { Tween, Ease } from '@blakron/game';
 
 // ── Layout constants ─────────────────────────────────────────────────────────
 
-const COL_LEFT_X = 0;
-const COL_RIGHT_X = 440;
 const SECTION_GAP = 20;
 const ROW_GAP = 32;
 const HEADER_H = 22;
@@ -42,8 +43,18 @@ function sectionGroup(title: string, x: number, y: number): Group {
 // ── UIScene ──────────────────────────────────────────────────────────────────
 
 export class UIScene extends Sprite {
-	public constructor() {
+	private readonly _colW: number;
+	private readonly _col0: number;
+	private readonly _col1: number;
+	private readonly _col2: number;
+
+	public constructor(screenWidth = 1200, _screenHeight = 800) {
 		super();
+		const pad = 20;
+		this._colW = Math.floor((screenWidth - pad * 4) / 3);
+		this._col0 = pad;
+		this._col1 = pad * 2 + this._colW;
+		this._col2 = pad * 3 + this._colW * 2;
 	}
 
 	public create(): void {
@@ -60,18 +71,27 @@ export class UIScene extends Sprite {
 		// ── Left column ──────────────────────────────────────────────────
 		let ly = 55;
 
-		ly = this._buildLabels(COL_LEFT_X, ly) + SECTION_GAP;
-		ly = this._buildButtons(COL_LEFT_X, ly) + SECTION_GAP;
-		ly = this._buildProgressBar(COL_LEFT_X, ly) + SECTION_GAP;
-		ly = this._buildCheckBoxes(COL_LEFT_X, ly) + SECTION_GAP;
-		ly = this._buildRadioButtons(COL_LEFT_X, ly) + SECTION_GAP;
-		this._buildAnimation(COL_LEFT_X, ly);
+		ly = this._buildLabels(this._col0, ly) + SECTION_GAP;
+		ly = this._buildButtons(this._col0, ly) + SECTION_GAP;
+		ly = this._buildProgressBar(this._col0, ly) + SECTION_GAP;
+		ly = this._buildCheckBoxes(this._col0, ly) + SECTION_GAP;
+		ly = this._buildRadioButtons(this._col0, ly) + SECTION_GAP;
+		this._buildAnimation(this._col0, ly);
 
-		// ── Right column ─────────────────────────────────────────────────
+		// ── Middle column ─────────────────────────────────────────────────
+		let my = 55;
+
+		my = this._buildImage(this._col1, my) + SECTION_GAP;
+		my = this._buildRects(this._col1, my) + SECTION_GAP;
+		my = this._buildSliders(this._col1, my) + SECTION_GAP;
+		my = this._buildToggleSwitch(this._col1, my) + SECTION_GAP;
+		this._buildViewStack(this._col1, my);
+
+		// ── Right column ──────────────────────────────────────────────────
 		let ry = 55;
 
-		ry = this._buildImage(COL_RIGHT_X, ry) + SECTION_GAP;
-		this._buildRects(COL_RIGHT_X, ry);
+		ry = this._buildPanel(this._col2, ry) + SECTION_GAP;
+		this._buildList(this._col2, ry);
 	}
 
 	// ── Labels ─────────────────────────────────────────────────────────────
@@ -383,5 +403,316 @@ export class UIScene extends Sprite {
 		g.addChild(r3);
 
 		return y + HEADER_H + 50 + 40;
+	}
+
+	// ── Sliders ────────────────────────────────────────────────────────────
+
+	private _buildSliders(x: number, y: number): number {
+		const g = sectionGroup('HSlider / VSlider', x, y);
+		this.addChild(g);
+
+		// Value display
+		const valTf = new TextField();
+		valTf.text = 'Value: 50';
+		valTf.textColor = 0xdfe6e9;
+		valTf.size = 12;
+		valTf.x = 220;
+		valTf.y = HEADER_H;
+		g.addChild(valTf);
+
+		// HSlider — track + thumb built manually
+		const trackW = 200;
+		const trackH = 8;
+		const thumbSize = 20;
+
+		const hTrack = new Rect(trackW, trackH, 0x2d3436);
+		hTrack.strokeColor = 0x636e72;
+		hTrack.strokeWeight = 1;
+		hTrack.y = HEADER_H + 6;
+		g.addChild(hTrack);
+
+		const hFill = new Rect(100, trackH, 0x6c5ce7);
+		hFill.y = HEADER_H + 6;
+		g.addChild(hFill);
+
+		const hThumb = new Rect(thumbSize, thumbSize, 0xffffff);
+		hThumb.x = 100 - thumbSize / 2;
+		hThumb.y = HEADER_H;
+		hThumb.touchEnabled = true;
+		g.addChild(hThumb);
+
+		// Wire up HSlider
+		const hs = new HSlider();
+		hs.minimum = 0;
+		hs.maximum = 100;
+		hs.value = 50;
+		hs.width = trackW;
+		hs.height = thumbSize;
+		hs.y = HEADER_H;
+		hs.thumb = hThumb;
+		hs.track = hTrack;
+		hs.graphics.beginFill(0x000000, 0.01);
+		hs.graphics.drawRect(0, 0, trackW, thumbSize);
+		hs.graphics.endFill();
+		g.addChild(hs);
+
+		hs.addEventListener('propertyChange', () => {
+			const pct = hs.value / 100;
+			hFill.width = trackW * pct;
+			hThumb.x = trackW * pct - thumbSize / 2;
+			valTf.text = `Value: ${Math.round(hs.value)}`;
+		});
+
+		// VSlider
+		const vTrackH = 80;
+		const vTrack = new Rect(trackH, vTrackH, 0x2d3436);
+		vTrack.strokeColor = 0x636e72;
+		vTrack.strokeWeight = 1;
+		vTrack.x = 220 + 6;
+		vTrack.y = HEADER_H + 30;
+		g.addChild(vTrack);
+
+		const vThumb = new Rect(thumbSize, thumbSize, 0x00b894);
+		vThumb.x = 220;
+		vThumb.y = HEADER_H + 30 + vTrackH - thumbSize;
+		vThumb.touchEnabled = true;
+		g.addChild(vThumb);
+
+		const vs = new VSlider();
+		vs.minimum = 0;
+		vs.maximum = 100;
+		vs.value = 0;
+		vs.width = thumbSize;
+		vs.height = vTrackH;
+		vs.x = 220;
+		vs.y = HEADER_H + 30;
+		vs.thumb = vThumb;
+		vs.track = vTrack;
+		vs.graphics.beginFill(0x000000, 0.01);
+		vs.graphics.drawRect(0, 0, thumbSize, vTrackH);
+		vs.graphics.endFill();
+		g.addChild(vs);
+
+		vs.addEventListener('propertyChange', () => {
+			const pct = vs.value / 100;
+			vThumb.y = HEADER_H + 30 + vTrackH * (1 - pct) - thumbSize / 2;
+		});
+
+		return y + HEADER_H + 30 + vTrackH + 10;
+	}
+
+	// ── ToggleSwitch ───────────────────────────────────────────────────────
+
+	private _buildToggleSwitch(x: number, y: number): number {
+		const g = sectionGroup('ToggleSwitch', x, y);
+		this.addChild(g);
+
+		const stateTf = new TextField();
+		stateTf.text = 'OFF';
+		stateTf.textColor = 0x636e72;
+		stateTf.size = 14;
+		stateTf.x = 120;
+		stateTf.y = HEADER_H + 4;
+		g.addChild(stateTf);
+
+		const sw = new ToggleSwitch();
+		sw.width = 100;
+		sw.height = 32;
+		sw.y = HEADER_H;
+
+		// Track
+		const track = new Rect(100, 32, 0x2d3436);
+		track.strokeColor = 0x636e72;
+		track.strokeWeight = 1;
+		sw.addChild(track);
+
+		// Thumb
+		const thumb = new Rect(28, 28, 0x636e72);
+		thumb.x = 2;
+		thumb.y = 2;
+		sw.addChild(thumb);
+
+		sw.graphics.beginFill(0x000000, 0.01);
+		sw.graphics.drawRect(0, 0, 100, 32);
+		sw.graphics.endFill();
+
+		sw.addEventListener(Event.CHANGE, () => {
+			track.fillColor = sw.selected ? 0x00b894 : 0x2d3436;
+			thumb.fillColor = sw.selected ? 0xffffff : 0x636e72;
+			thumb.x = sw.selected ? 70 : 2;
+			stateTf.text = sw.selected ? 'ON' : 'OFF';
+			stateTf.textColor = sw.selected ? 0x00b894 : 0x636e72;
+		});
+
+		g.addChild(sw);
+		return y + HEADER_H + 32;
+	}
+
+	// ── ViewStack ──────────────────────────────────────────────────────────
+
+	private _buildViewStack(x: number, y: number): number {
+		const g = sectionGroup('ViewStack', x, y);
+		this.addChild(g);
+
+		const vs = new ViewStack();
+		vs.width = 300;
+		vs.height = 80;
+		vs.y = HEADER_H;
+		g.addChild(vs);
+
+		const colors = [0x6c5ce7, 0x00b894, 0xe17055];
+		const names = ['View A', 'View B', 'View C'];
+
+		names.forEach((name, i) => {
+			const page = new Rect(300, 80, colors[i]);
+			const lbl = new Label(name);
+			lbl.x = 10;
+			lbl.y = 10;
+			lbl.textColor = 0xffffff;
+			lbl.size = 16;
+			page.addChild(lbl);
+			vs.addChild(page);
+		});
+
+		// Nav buttons
+		names.forEach((name, i) => {
+			const btn = new Button();
+			btn.width = 80;
+			btn.height = 28;
+			btn.x = i * 88;
+			btn.y = HEADER_H + 88;
+			btn.graphics.beginFill(0x000000, 0.01);
+			btn.graphics.drawRect(0, 0, 80, 28);
+			btn.graphics.endFill();
+			const bg = new Rect(80, 28, colors[i]);
+			btn.addChild(bg);
+			const lbl = new Label(name);
+			lbl.width = 80;
+			lbl.height = 28;
+			lbl.textAlign = 'center';
+			lbl.verticalAlign = 'middle';
+			lbl.textColor = 0xffffff;
+			lbl.size = 12;
+			btn.addChild(lbl);
+			btn.addEventListener(TouchEvent.TOUCH_TAP, () => {
+				vs.selectedIndex = i;
+			});
+			g.addChild(btn);
+		});
+
+		return y + HEADER_H + 80 + 28 + 8;
+	}
+
+	// ── Panel ──────────────────────────────────────────────────────────────
+
+	private _buildPanel(x: number, y: number): number {
+		const g = sectionGroup('Panel', x, y);
+		this.addChild(g);
+
+		const panel = new Panel();
+		panel.title = 'My Panel';
+		panel.width = 280;
+		panel.height = 100;
+		panel.y = HEADER_H;
+
+		// Manual skin: title bar + content area
+		const titleBar = new Rect(280, 28, 0x0f3460);
+		panel.addChild(titleBar);
+
+		const titleLbl = new Label('My Panel');
+		titleLbl.x = 10;
+		titleLbl.y = 0;
+		titleLbl.width = 260;
+		titleLbl.height = 28;
+		titleLbl.verticalAlign = 'middle';
+		titleLbl.textColor = 0xffffff;
+		titleLbl.size = 13;
+		panel.titleDisplay = titleLbl;
+		panel.addChild(titleLbl);
+
+		const content = new Rect(280, 72, 0x16213e);
+		content.y = 28;
+		content.strokeColor = 0x0f3460;
+		content.strokeWeight = 1;
+		panel.addChild(content);
+
+		const contentLbl = new Label('Panel content area');
+		contentLbl.x = 10;
+		contentLbl.y = 38;
+		contentLbl.textColor = 0xb2bec3;
+		contentLbl.size = 13;
+		panel.addChild(contentLbl);
+
+		g.addChild(panel);
+		return y + HEADER_H + 100;
+	}
+
+	// ── List ───────────────────────────────────────────────────────────────
+
+	private _buildList(x: number, y: number): number {
+		const g = sectionGroup('List + ArrayCollection', x, y);
+		this.addChild(g);
+
+		const items = ['Apple', 'Banana', 'Cherry', 'Durian', 'Elderberry'];
+		const data = new ArrayCollection(items);
+
+		const selTf = new TextField();
+		selTf.text = 'Selected: none';
+		selTf.textColor = 0xdfe6e9;
+		selTf.size = 12;
+		selTf.x = 180;
+		selTf.y = 0;
+		g.addChild(selTf);
+
+		const list = new List();
+		list.dataProvider = data;
+		list.width = 160;
+		list.height = items.length * 36;
+		list.y = HEADER_H;
+		g.addChild(list);
+
+		// Build item renderers manually
+		items.forEach((item, i) => {
+			const renderer = new ItemRenderer();
+			renderer.width = 160;
+			renderer.height = 36;
+			renderer.y = i * 36;
+			renderer.data = item;
+			renderer.itemIndex = i;
+
+			renderer.graphics.beginFill(0x000000, 0.01);
+			renderer.graphics.drawRect(0, 0, 160, 36);
+			renderer.graphics.endFill();
+
+			const bg = new Rect(160, 36, i % 2 === 0 ? 0x16213e : 0x0f3460);
+			renderer.addChild(bg);
+
+			const lbl = new Label(item);
+			lbl.x = 12;
+			lbl.y = 0;
+			lbl.width = 136;
+			lbl.height = 36;
+			lbl.verticalAlign = 'middle';
+			lbl.textColor = 0xdfe6e9;
+			lbl.size = 14;
+			renderer.addChild(lbl);
+
+			list.addChild(renderer);
+		});
+
+		list.addEventListener(ItemTapEvent.ITEM_TAP, (e: Event) => {
+			const ite = e as ItemTapEvent;
+			selTf.text = `Selected: ${ite.item}`;
+			// Highlight selected row
+			for (let i = 0; i < list.numChildren; i++) {
+				const r = list.getChildAt(i) as ItemRenderer;
+				if (!r) continue;
+				const bg = r.getChildAt(0) as Rect;
+				if (!bg) continue;
+				bg.fillColor = r.itemIndex === ite.itemIndex ? 0x6c5ce7 : r.itemIndex % 2 === 0 ? 0x16213e : 0x0f3460;
+			}
+		});
+
+		return y + HEADER_H + items.length * 36;
 	}
 }

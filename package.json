@@ -10,7 +10,7 @@
 	"dependencies": {
 		"@blakron/core": "^0.3.11",
 		"@blakron/game": "^0.1.3",
-		"@blakron/ui": "^0.2.3"
+		"@blakron/ui": "^0.2.5"
 	},
 	"devDependencies": {
 		"typescript": "^5.6.0",

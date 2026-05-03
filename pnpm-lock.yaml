@@ -15,8 +15,8 @@ importers:
         specifier: ^0.1.3
         version: 0.1.3
       '@blakron/ui':
-        specifier: ^0.2.3
-        version: 0.2.3
+        specifier: ^0.2.5
+        version: 0.2.5
     devDependencies:
       typescript:
         specifier: ^5.6.0
@@ -33,8 +33,8 @@ packages:
   '@blakron/game@0.1.3':
     resolution: {integrity: sha512-En1yAd/uaRe9MT2jjw3cVVl2Axei9kz7fvsTrTvAKySBRQ/3omzOC0DCTA0XXUdMBkMlBH2v3QVHA91RU2rVEw==}
 
-  '@blakron/ui@0.2.3':
-    resolution: {integrity: sha512-WbQg9UEhmawPNPE5qbNSWQoP+0MYlElFcLT/zYpDkqrV8yf+9AlPYTqv1ahpTKxIUcWuDFPY/4X80/3m5Te2jw==}
+  '@blakron/ui@0.2.5':
+    resolution: {integrity: sha512-gip7qK/jgUIR58g0+pxU1AeKBhS6ZoItp2QdsPFqP/ibBGp9j0+x4kok2fxbXgFhssOlGjYdQXGn1Y2Tnmh13Q==}
 
   '@emnapi/core@1.10.0':
     resolution: {integrity: sha512-yq6OkJ4p82CAfPl0u9mQebQHKPJkY7WrIuk205cTYnYe+k2Z8YBh11FrbRG/H6ihirqcacOgl2BIO8oyMQLeXw==}
@@ -335,7 +335,7 @@ snapshots:
     dependencies:
       '@blakron/core': 0.3.11
 
-  '@blakron/ui@0.2.3':
+  '@blakron/ui@0.2.5':
     dependencies:
       '@blakron/core': 0.3.11
 

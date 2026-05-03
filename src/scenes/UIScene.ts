@@ -710,10 +710,13 @@ export class UIScene extends Sprite {
 		this.addChild(g);
 
 		const scrollerW = 200;
-		const scrollerH = 120;
+		const scrollerH = 200;
 		const rowH = 36;
 		const rowGap = 4;
-		const colors = [0x6c5ce7, 0x00b894, 0xe17055, 0xfeca57, 0x74b9ff, 0xa29bfe, 0xff7675];
+		const colors = [
+			0x6c5ce7, 0x00b894, 0xe17055, 0xfeca57, 0x74b9ff, 0xa29bfe, 0xff7675, 0xfd79a8, 0x55efc4, 0xfdcb6e,
+			0xe84393, 0x0984e3, 0x6ab04c, 0xeb4d4b,
+		];
 		const totalContentH = colors.length * (rowH + rowGap) - rowGap;
 
 		// Viewport: fixed to visible size, content overflows
@@ -819,43 +822,88 @@ export class UIScene extends Sprite {
 	// ── List ───────────────────────────────────────────────────────────────
 
 	private _buildList(x: number, y: number): number {
-		const g = sectionGroup('List + ArrayCollection', x, y);
+		const g = sectionGroup('List + VirtualLayout (15 items, ~5 visible)', x, y);
 		this.addChild(g);
 
-		const items = ['Apple', 'Banana', 'Cherry', 'Durian', 'Elderberry'];
+		const items = [
+			'Apple',
+			'Banana',
+			'Cherry',
+			'Durian',
+			'Elderberry',
+			'Fig',
+			'Grape',
+			'Honeydew',
+			'Kiwi',
+			'Lemon',
+			'Mango',
+			'Nectarine',
+			'Orange',
+			'Papaya',
+			'Quince',
+		];
 		const data = new ArrayCollection(items);
 
 		const selTf = new TextField();
 		selTf.text = 'Selected: none';
 		selTf.textColor = 0xdfe6e9;
 		selTf.size = 12;
-		selTf.x = 220;
-		selTf.y = 0;
+		selTf.x = 0;
+		selTf.y = 220;
 		g.addChild(selTf);
 
+		const rendererCountTf = new TextField();
+		rendererCountTf.text = 'Renderers: ?';
+		rendererCountTf.textColor = 0x636e72;
+		rendererCountTf.size = 11;
+		rendererCountTf.x = 220;
+		rendererCountTf.y = 18;
+		g.addChild(rendererCountTf);
+
+		const VISIBLE_H = 180; // ~5 rows visible out of 15
+
+		// List is the viewport — it handles virtual layout internally
 		const list = new List();
 		list.dataProvider = data;
 		list.itemRenderer = TextItemRenderer;
-		list.useVirtualLayout = false;
+		list.useVirtualLayout = true; // explicitly enable virtual layout
 		list.width = 200;
-		list.height = items.length * 36;
-		list.y = HEADER_H;
-		g.addChild(list);
+		list.height = VISIBLE_H;
+		list.scrollEnabled = true;
 
-		let lastSelected = -1;
+		// Scroller provides the scrollable window
+		const scroller = new Scroller();
+		scroller.bounces = false;
+		scroller.width = 200;
+		scroller.height = VISIBLE_H;
+		scroller.y = HEADER_H;
+		scroller.scrollRect = new Rectangle(0, 0, 200, VISIBLE_H);
+		scroller.addChild(list);
+		scroller.viewport = list;
+		g.addChild(scroller);
+
+		// Count active renderers after each scroll to verify virtual layout
+		let countTimer = 0;
+		const updateCount = () => {
+			let count = 0;
+			for (let i = 0; i < items.length; i++) {
+				if (list.getElementAt(i)) count++;
+			}
+			rendererCountTf.text = `Renderers: ${count} / ${items.length}`;
+		};
+		setInterval(() => {
+			if (countTimer++ % 10 === 0) updateCount();
+		}, 100);
 
 		list.addEventListener(ItemTapEvent.ITEM_TAP, (e: Event) => {
 			const ite = e as ItemTapEvent;
 			selTf.text = `Selected: ${ite.item}`;
-
-			// Update highlight
 			for (let i = 0; i < items.length; i++) {
 				const r = list.getElementAt(i) as TextItemRenderer | undefined;
 				if (r) r.setSelected(i === ite.itemIndex);
 			}
-			lastSelected = ite.itemIndex;
 		});
 
-		return y + HEADER_H + items.length * 36;
+		return y + HEADER_H + VISIBLE_H + 4;
 	}
 }

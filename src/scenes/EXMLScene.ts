@@ -1,104 +1,160 @@
-import { Sprite, Shape, TextField } from '@blakron/core';
+import { Sprite, Shape, TextField, TouchEvent, Event } from '@blakron/core';
+import { Button, Label, Panel, CheckBox } from '@blakron/ui';
 import { compileEXML, parseEXML } from '../exml/index.js';
+import * as BlakronCore from '@blakron/core';
+import * as BlakronUI from '@blakron/ui';
 
 // ── EXML examples ─────────────────────────────────────────────────────────────
 
 interface ExmlExample {
 	name: string;
 	exml: string;
+	description: string;
 }
 
 const EXAMPLES: ExmlExample[] = [
 	{
-		name: 'Simple Button',
+		name: 'Button Skin',
+		description: 'A Button with up/down/disabled states via Skin',
 		exml: `<?xml version="1.0" encoding="utf-8"?>
-<eui:Skin class="skins.SimpleButton" width="300" height="200"
-    xmlns:eui="http://ns.egret.com/eui">
-  <eui:Button id="btn" label="Click Me"
-      x="10" y="20" width="120" height="40"/>
-  <eui:Label id="title" text="Hello Blakron"
-      x="10" y="80"/>
-</eui:Skin>`,
-	},
-	{
-		name: 'Layout Group',
-		exml: `<?xml version="1.0" encoding="utf-8"?>
-<eui:Skin class="skins.LayoutDemo" width="400" height="300"
-    xmlns:eui="http://ns.egret.com/eui">
-  <eui:Group x="10" y="10" width="380" height="280">
-    <eui:Rect width="100%" height="100%"
-        fillColor="0x2d3436" strokeColor="0x636e72"
-        strokeWeight="1"/>
-    <eui:Label text="Group Container" x="10" y="10"/>
-    <eui:Button id="okBtn" label="OK"
-        x="10" y="40" width="80" height="32"/>
-    <eui:Button id="cancelBtn" label="Cancel"
-        x="100" y="40" width="80" height="32"/>
-    <eui:CheckBox id="cb" label="Enable feature"
-        x="10" y="90" width="160" height="28"/>
-  </eui:Group>
-</eui:Skin>`,
-	},
-	{
-		name: 'States',
-		exml: `<?xml version="1.0" encoding="utf-8"?>
-<eui:Skin class="skins.StateSkin"
+<eui:Skin class="skins.ButtonSkin" width="160" height="44"
     xmlns:eui="http://ns.egret.com/eui">
   <eui:states>
     <eui:State name="up"/>
     <eui:State name="down"/>
     <eui:State name="disabled"/>
   </eui:states>
-  <eui:Rect id="bg" width="120" height="40"
+  <eui:Rect id="bg" width="160" height="44"
       fillColor="0x6c5ce7"
       fillColor.down="0x5a4bd1"
       fillColor.disabled="0x636e72"/>
-  <eui:Label id="lbl" text="Button"
-      text.down="Pressed"
-      text.disabled="Disabled"
-      x="10" y="10"/>
+  <eui:Label id="labelDisplay"
+      x="0" y="0" width="160" height="44"
+      textAlign="center" verticalAlign="middle"
+      textColor="0xffffff" size="16"/>
 </eui:Skin>`,
 	},
 	{
-		name: 'Percent & Binding',
+		name: 'Card Panel',
+		description: 'A Panel skin with title bar and content area',
 		exml: `<?xml version="1.0" encoding="utf-8"?>
-<eui:Skin class="skins.BindDemo" width="400" height="200"
+<eui:Skin class="skins.CardSkin" width="280" height="160"
     xmlns:eui="http://ns.egret.com/eui">
-  <eui:Group width="100%" height="100%">
-    <eui:Label id="nameLabel" text="{data.name}"
-        x="10" y="10"/>
-    <eui:Label id="scoreLabel" text="{data.score}"
-        x="10" y="40"/>
-    <eui:ProgressBar id="bar"
-        width="80%" height="20"
-        x="10" y="70"/>
-  </eui:Group>
+  <eui:Rect width="280" height="160"
+      fillColor="0x16213e"
+      strokeColor="0x0f3460" strokeWeight="1"/>
+  <eui:Rect width="280" height="36"
+      fillColor="0x0f3460"/>
+  <eui:Label id="titleDisplay"
+      x="12" y="0" width="256" height="36"
+      verticalAlign="middle"
+      textColor="0xffffff" size="14" bold="true"/>
+  <eui:Label id="contentLabel"
+      x="12" y="48"
+      textColor="0xb2bec3" size="13"/>
 </eui:Skin>`,
 	},
+	{
+		name: 'CheckBox Skin',
+		description: 'CheckBox with selected/unselected visual states',
+		exml: `<?xml version="1.0" encoding="utf-8"?>
+<eui:Skin class="skins.CheckBoxSkin" width="180" height="28"
+    xmlns:eui="http://ns.egret.com/eui">
+  <eui:states>
+    <eui:State name="up"/>
+    <eui:State name="upAndSelected"/>
+    <eui:State name="down"/>
+    <eui:State name="downAndSelected"/>
+    <eui:State name="disabled"/>
+  </eui:states>
+  <eui:Rect id="box" x="0" y="4" width="20" height="20"
+      fillColor="0x2d3436"
+      fillColor.upAndSelected="0x6c5ce7"
+      fillColor.downAndSelected="0x5a4bd1"
+      strokeColor="0x636e72" strokeWeight="1"/>
+  <eui:Label id="labelDisplay"
+      x="28" y="0" width="152" height="28"
+      verticalAlign="middle"
+      textColor="0xdfe6e9" size="14"/>
+</eui:Skin>`,
+	},
+	{
+		name: 'Legacy Style',
+		description: 'Egret legacy syntax: states attr shorthand + e: prefix',
+		exml: `<?xml version="1.0" encoding="utf-8"?>
+<e:Skin class="skins.LegacyButton" width="160" height="44"
+    states="up,down,disabled"
+    xmlns:e="http://ns.egret.com/eui">
+  <e:Rect id="bg" width="160" height="44"
+      fillColor="0x00b894"
+      fillColor.down="0x00a381"
+      fillColor.disabled="0x636e72"/>
+  <e:Label id="labelDisplay"
+      x="0" y="0" width="160" height="44"
+      textAlign="center" verticalAlign="middle"
+      textColor="0xffffff" size="16"
+      textColor.disabled="0xb2bec3"/>
+</e:Skin>`,
+	},
 ];
+
+// ── Runtime EXML executor ─────────────────────────────────────────────────────
+
+/**
+ * Compile EXML source to a Skin factory function and execute it.
+ * Replaces ES module imports with values from already-loaded packages.
+ */
+function exmlToSkinFactory(source: string): (() => InstanceType<typeof import('@blakron/ui').Skin>) | null {
+	try {
+		let js = compileEXML(source);
+
+		// Strip import lines — we'll inject the symbols manually
+		js = js.replace(/^import\s+\{[^}]+\}\s+from\s+"[^"]+";?\s*$/gm, '');
+
+		// Strip 'export' keyword from function declaration
+		js = js.replace(/^export\s+function\s+/m, 'function ');
+
+		// Extract the factory function name
+		const match = js.match(/^function\s+(\w+)\s*\(/m);
+		if (!match) return null;
+		const funcName = match[1];
+
+		// Append a return statement so new Function can return the factory
+		js += `\nreturn ${funcName};`;
+
+		// Build the injected symbols from loaded packages
+		const symbols: Record<string, unknown> = {
+			...BlakronUI,
+			...BlakronCore,
+		};
+
+		// Create and execute the function with injected symbols
+		const paramNames = Object.keys(symbols);
+		const paramValues = Object.values(symbols);
+		const fn = new Function(...paramNames, js);
+		return fn(...paramValues) as () => InstanceType<typeof import('@blakron/ui').Skin>;
+	} catch (e) {
+		console.error('[EXMLScene] Failed to compile EXML:', e);
+		return null;
+	}
+}
 
 // ── Layout ────────────────────────────────────────────────────────────────────
 
 const PAD = 16;
 const TAB_H = 36;
-const DIVIDER_X_RATIO = 0.45; // left panel takes 45% of width
+const DIVIDER_X_RATIO = 0.5;
 
 // ── EXMLScene ─────────────────────────────────────────────────────────────────
 
 export class EXMLScene extends Sprite {
 	private readonly _sw: number;
 	private readonly _sh: number;
-	private _activeIdx = 0;
 
-	// Panels
 	private _leftPanel!: Sprite;
 	private _rightPanel!: Sprite;
-
-	// Left: IR display
-	private _irLines: TextField[] = [];
-
-	// Right: source display
 	private _sourceLines: TextField[] = [];
+	private _renderContainer!: Sprite;
 
 	public constructor(screenWidth = 800, screenHeight = 600) {
 		super();
@@ -117,7 +173,7 @@ export class EXMLScene extends Sprite {
 
 	private _buildTitle(): void {
 		const tf = new TextField();
-		tf.text = 'EXML Parser Demo';
+		tf.text = 'EXML → Skin Runtime Demo';
 		tf.textColor = 0xffffff;
 		tf.size = 22;
 		tf.bold = true;
@@ -126,7 +182,7 @@ export class EXMLScene extends Sprite {
 		this.addChild(tf);
 	}
 
-	// ── Example tabs ──────────────────────────────────────────────────────────
+	// ── Tabs ──────────────────────────────────────────────────────────────────
 
 	private _buildExampleTabs(): void {
 		const tabY = 44;
@@ -156,29 +212,22 @@ export class EXMLScene extends Sprite {
 			lbl.verticalAlign = 'middle';
 			tab.addChild(lbl);
 
-			tab.addEventListener('touchTap', () => {
+			tab.addEventListener(TouchEvent.TOUCH_TAP, () => {
 				this._showExample(i);
-				// Update tab colors
-				this._rebuildTabs(i);
+				this._updateTabColors(i);
 			});
 
 			this.addChild(tab);
 		});
 	}
 
-	private _rebuildTabs(activeIdx: number): void {
-		// Remove old tabs (children 1..EXAMPLES.length, after title at 0)
-		// Simpler: just rebuild from scratch by removing and re-adding
-		// We track tabs by name
+	private _updateTabColors(activeIdx: number): void {
 		const tabY = 44;
 		const tabW = Math.floor((this._sw - PAD * 2) / EXAMPLES.length) - 4;
-
-		EXAMPLES.forEach((ex, i) => {
-			// Find the tab sprite at this position
+		EXAMPLES.forEach((_, i) => {
 			for (let c = 0; c < this.numChildren; c++) {
 				const child = this.getChildAt(c);
 				if (child && child.x === PAD + i * (tabW + 4) && child.y === tabY) {
-					// Update background color
 					const bg = (child as Sprite).getChildAt(0) as Shape;
 					if (bg) {
 						bg.graphics.clear();
@@ -201,60 +250,59 @@ export class EXMLScene extends Sprite {
 		const leftW = divX - PAD - 4;
 		const rightW = this._sw - divX - PAD - 4;
 
-		// ── Left panel: compiled JS output ────────────────────────────────────
+		// ── Left: live render ─────────────────────────────────────────────────
 		this._leftPanel = new Sprite();
 		this._leftPanel.x = PAD;
 		this._leftPanel.y = panelY;
 		this.addChild(this._leftPanel);
 
-		// Background
 		const leftBg = new Shape();
 		leftBg.graphics.beginFill(0x0d1117);
 		leftBg.graphics.drawRoundRect(0, 0, leftW, panelH, 6);
 		leftBg.graphics.endFill();
 		this._leftPanel.addChild(leftBg);
 
-		// Panel label
 		const leftLabel = new TextField();
-		leftLabel.text = '◀  Compiled JS Output';
-		leftLabel.textColor = 0x6c5ce7;
+		leftLabel.text = '▶  Live Render';
+		leftLabel.textColor = 0x00b894;
 		leftLabel.size = 12;
 		leftLabel.bold = true;
 		leftLabel.x = 10;
 		leftLabel.y = 8;
-		leftLabel.width = leftW - 20;
 		this._leftPanel.addChild(leftLabel);
 
-		// ── Right panel: EXML source ───────────────────────────────────────────
+		// Container for rendered components
+		this._renderContainer = new Sprite();
+		this._renderContainer.x = 20;
+		this._renderContainer.y = 36;
+		this._leftPanel.addChild(this._renderContainer);
+
+		// ── Right: EXML source ────────────────────────────────────────────────
 		this._rightPanel = new Sprite();
 		this._rightPanel.x = divX + 4;
 		this._rightPanel.y = panelY;
 		this.addChild(this._rightPanel);
 
-		// Background
 		const rightBg = new Shape();
 		rightBg.graphics.beginFill(0x0d1117);
 		rightBg.graphics.drawRoundRect(0, 0, rightW, panelH, 6);
 		rightBg.graphics.endFill();
 		this._rightPanel.addChild(rightBg);
 
-		// Panel label
 		const rightLabel = new TextField();
-		rightLabel.text = '▶  EXML Source';
-		rightLabel.textColor = 0x00b894;
+		rightLabel.text = '◀  EXML Source';
+		rightLabel.textColor = 0x6c5ce7;
 		rightLabel.size = 12;
 		rightLabel.bold = true;
 		rightLabel.x = 10;
 		rightLabel.y = 8;
-		rightLabel.width = rightW - 20;
 		this._rightPanel.addChild(rightLabel);
 
-		// Divider line
+		// Divider
 		const divider = new Shape();
 		divider.graphics.lineStyle(1, 0x2d3436);
 		divider.graphics.moveTo(0, 0);
 		divider.graphics.lineTo(0, panelH);
-		divider.graphics.endFill();
 		divider.x = divX;
 		divider.y = panelY;
 		this.addChild(divider);
@@ -263,67 +311,172 @@ export class EXMLScene extends Sprite {
 	// ── Show example ──────────────────────────────────────────────────────────
 
 	private _showExample(idx: number): void {
-		this._activeIdx = idx;
 		const ex = EXAMPLES[idx];
 
-		// Compile EXML → JS
-		let jsOutput = '';
-		let parseError = '';
-		try {
-			jsOutput = compileEXML(ex.exml, ex.name.replace(/\s/g, ''));
-		} catch (e) {
-			parseError = `Parse error:\n${e instanceof Error ? e.message : String(e)}`;
+		// Clear render container
+		while (this._renderContainer.numChildren > 0) {
+			this._renderContainer.removeChildAt(0);
 		}
 
-		// Also show IR summary
-		let irSummary = '';
-		try {
-			const ir = parseEXML(ex.exml);
-			irSummary = this._formatIR(ir);
-		} catch {
-			// ignore
+		// Compile and render
+		const factory = exmlToSkinFactory(ex.exml);
+		if (factory) {
+			this._renderExample(idx, factory);
+		} else {
+			const errTf = new TextField();
+			errTf.text = 'Compile error — see console';
+			errTf.textColor = 0xe17055;
+			errTf.size = 14;
+			this._renderContainer.addChild(errTf);
 		}
 
-		const leftContent = parseError || irSummary + '\n\n' + jsOutput;
-		const rightContent = ex.exml;
-
-		this._renderText(this._leftPanel, leftContent, this._irLines, 'left');
-		this._renderText(this._rightPanel, rightContent, this._sourceLines, 'right');
+		// Show EXML source on right
+		this._renderSource(ex.exml);
 	}
 
-	private _formatIR(ir: ReturnType<typeof parseEXML>): string {
-		const lines: string[] = [];
-		lines.push(`// ── IR Summary ──`);
-		lines.push(`// class:    ${ir.className || '(unnamed)'}`);
-		lines.push(`// size:     ${ir.width ?? '?'} × ${ir.height ?? '?'}`);
-		lines.push(`// parts:    [${ir.skinParts.join(', ')}]`);
-		lines.push(`// children: ${ir.children.length}`);
-		lines.push(`// states:   [${ir.states.map(s => s.name).join(', ')}]`);
-		lines.push(`// imports:  ${[...ir.imports.keys()].join(', ')}`);
-		return lines.join('\n');
+	// ── Render each example ───────────────────────────────────────────────────
+
+	private _renderExample(idx: number, factory: () => unknown): void {
+		const rc = this._renderContainer;
+		const ex = EXAMPLES[idx];
+
+		// Description
+		const desc = new TextField();
+		desc.text = ex.description;
+		desc.textColor = 0x636e72;
+		desc.size = 12;
+		desc.y = 0;
+		rc.addChild(desc);
+
+		if (idx === 0) {
+			// Button Skin — show 3 states + interactive button
+			const statusTf = new TextField();
+			statusTf.text = 'Tap the button';
+			statusTf.textColor = 0xdfe6e9;
+			statusTf.size = 13;
+			statusTf.y = 24;
+			rc.addChild(statusTf);
+
+			['up', 'down', 'disabled'].forEach((state, i) => {
+				const lbl = new TextField();
+				lbl.text = `state: ${state}`;
+				lbl.textColor = 0x636e72;
+				lbl.size = 11;
+				lbl.x = 0;
+				lbl.y = 50 + i * 60;
+				rc.addChild(lbl);
+
+				const btn = new Button();
+				btn.label = state === 'disabled' ? 'Disabled' : 'Click Me';
+				btn.skinName = factory as new () => InstanceType<typeof import('@blakron/ui').Skin>;
+				btn.width = 160;
+				btn.height = 44;
+				btn.x = 0;
+				btn.y = 64 + i * 60;
+				if (state === 'disabled') {
+					btn.enabled = false;
+				} else if (state === 'down') {
+					btn.currentState = 'down';
+				}
+				btn.addEventListener(TouchEvent.TOUCH_TAP, () => {
+					statusTf.text = `Tapped! (state was: ${state})`;
+				});
+				rc.addChild(btn);
+			});
+		} else if (idx === 1) {
+			// Card Panel skin — Panel has titleDisplay as a built-in skin part
+			const panel = new Panel();
+			panel.title = 'Card Title';
+			panel.skinName = factory as new () => InstanceType<typeof import('@blakron/ui').Skin>;
+			panel.width = 280;
+			panel.height = 160;
+			panel.y = 24;
+
+			// contentLabel is not a Panel skin part, set it after skin attaches
+			panel.addEventListener(Event.COMPLETE, () => {
+				const skin = panel.skin;
+				if (!skin) return;
+				const contentLabel = skin.getPart('contentLabel') as Label | undefined;
+				if (contentLabel) contentLabel.text = 'Skin generated from EXML\nat runtime via compileEXML()';
+			});
+			rc.addChild(panel);
+		} else if (idx === 2) {
+			// CheckBox skin — show selected/unselected
+			const statusTf = new TextField();
+			statusTf.text = 'Tap to toggle';
+			statusTf.textColor = 0xdfe6e9;
+			statusTf.size = 13;
+			statusTf.y = 24;
+			rc.addChild(statusTf);
+
+			['Option A', 'Option B', 'Option C'].forEach((label, i) => {
+				const cb = new CheckBox();
+				cb.label = label;
+				cb.skinName = factory as new () => InstanceType<typeof import('@blakron/ui').Skin>;
+				cb.width = 180;
+				cb.height = 28;
+				cb.y = 50 + i * 36;
+
+				// hit area
+				cb.graphics.beginFill(0x000000, 0.01);
+				cb.graphics.drawRect(0, 0, 180, 28);
+				cb.graphics.endFill();
+
+				cb.addEventListener(Event.CHANGE, () => {
+					statusTf.text = `${label}: ${cb.selected ? 'checked ✓' : 'unchecked'}`;
+				});
+				rc.addChild(cb);
+			});
+		} else if (idx === 3) {
+			// Legacy style — states attr shorthand + e: prefix
+			const statusTf2 = new TextField();
+			statusTf2.text = 'Tap the button';
+			statusTf2.textColor = 0xdfe6e9;
+			statusTf2.size = 13;
+			statusTf2.y = 24;
+			rc.addChild(statusTf2);
+
+			(['up', 'disabled'] as const).forEach((state, i) => {
+				const lbl = new TextField();
+				lbl.text = `state: ${state}`;
+				lbl.textColor = 0x636e72;
+				lbl.size = 11;
+				lbl.x = 0;
+				lbl.y = 50 + i * 60;
+				rc.addChild(lbl);
+
+				const btn = new Button();
+				btn.label = state === 'disabled' ? 'Disabled' : 'Legacy Button';
+				btn.skinName = factory as new () => InstanceType<typeof import('@blakron/ui').Skin>;
+				btn.width = 160;
+				btn.height = 44;
+				btn.x = 0;
+				btn.y = 64 + i * 60;
+				if (state === 'disabled') btn.enabled = false;
+				btn.addEventListener(TouchEvent.TOUCH_TAP, () => {
+					statusTf2.text = 'Tapped legacy button!';
+				});
+				rc.addChild(btn);
+			});
+		}
 	}
 
-	private _renderText(panel: Sprite, content: string, cache: TextField[], side: 'left' | 'right'): void {
-		// Remove old text lines (keep first 2 children: bg + label)
-		while (panel.numChildren > 2) {
-			panel.removeChildAt(panel.numChildren - 1);
-		}
-		cache.length = 0;
+	// ── Render EXML source ────────────────────────────────────────────────────
+
+	private _renderSource(exml: string): void {
+		const panel = this._rightPanel;
+		while (panel.numChildren > 2) panel.removeChildAt(panel.numChildren - 1);
+		this._sourceLines.length = 0;
 
 		const panelY = 44 + TAB_H + 8;
 		const panelH = this._sh - panelY - PAD;
 		const divX = Math.floor(this._sw * DIVIDER_X_RATIO);
-		const leftW = divX - PAD - 4;
-		const rightW = this._sw - divX - PAD - 4;
-		const panelW = side === 'left' ? leftW : rightW;
+		const panelW = this._sw - divX - PAD - 4;
 
-		const lines = content.split('\n');
+		const lines = exml.split('\n');
 		const lineH = 16;
 		const startY = 30;
 		const maxLines = Math.floor((panelH - startY - 8) / lineH);
-
-		// Syntax-color keywords for JS output (left panel)
-		const isLeft = side === 'left';
 
 		lines.slice(0, maxLines).forEach((line, i) => {
 			const tf = new TextField();
@@ -334,33 +487,18 @@ export class EXMLScene extends Sprite {
 			tf.width = panelW - 20;
 			tf.height = lineH;
 
-			// Simple syntax coloring
-			if (isLeft) {
-				if (line.trimStart().startsWith('//')) {
-					tf.textColor = 0x6a9955; // comment → green
-				} else if (/^\s*(import|export|const|return|new|function)/.test(line)) {
-					tf.textColor = 0x569cd6; // keyword → blue
-				} else if (/^\s*\w+\.\w+\s*=/.test(line)) {
-					tf.textColor = 0xdcdcaa; // assignment → yellow
-				} else {
-					tf.textColor = 0xd4d4d4; // default → light gray
-				}
+			if (line.trimStart().startsWith('<?') || line.trimStart().startsWith('<!--')) {
+				tf.textColor = 0x6a9955;
+			} else if (/<\/?\w/.test(line)) {
+				tf.textColor = 0x4ec9b0;
 			} else {
-				// EXML source coloring
-				if (line.trimStart().startsWith('<?') || line.trimStart().startsWith('<!--')) {
-					tf.textColor = 0x6a9955; // PI/comment → green
-				} else if (/<\/?\w/.test(line)) {
-					tf.textColor = 0x4ec9b0; // tag → teal
-				} else {
-					tf.textColor = 0xce9178; // attribute values → orange
-				}
+				tf.textColor = 0xce9178;
 			}
 
 			panel.addChild(tf);
-			cache.push(tf);
+			this._sourceLines.push(tf);
 		});
 
-		// Show truncation notice if needed
 		if (lines.length > maxLines) {
 			const notice = new TextField();
 			notice.text = `... (${lines.length - maxLines} more lines)`;
@@ -368,7 +506,6 @@ export class EXMLScene extends Sprite {
 			notice.size = 10;
 			notice.x = 10;
 			notice.y = startY + maxLines * lineH;
-			notice.width = panelW - 20;
 			panel.addChild(notice);
 		}
 	}

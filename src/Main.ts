@@ -162,3 +162,24 @@ setInterval(() => {
 switchScene('core');
 console.log('[Blakron Demo] Started — click tabs to switch scenes');
 console.log(`[Blakron Demo] Renderer: ${app.player.isWebGL ? 'WebGL' : 'Canvas 2D'}`);
+
+// ── Resize ────────────────────────────────────────────────────────────────────
+
+app.stage.addEventListener(Event.RESIZE, () => {
+	const w = app.stage.stageWidth;
+	const h = app.stage.stageHeight;
+
+	// Redraw tab bar background
+	tabBg.graphics.clear();
+	tabBg.graphics.beginFill(0x16213e);
+	tabBg.graphics.drawRect(0, 0, w, 44);
+	tabBg.graphics.endFill();
+
+	// Move FPS display
+	fpsText.x = w - 80;
+
+	// Recreate current scene with new dimensions
+	const current = activeTab;
+	activeTab = '' as SceneName;
+	switchScene(current);
+});

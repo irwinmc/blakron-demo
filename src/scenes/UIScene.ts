@@ -18,6 +18,7 @@ import {
 	ItemTapEvent,
 	ProgressBar,
 	Scroller,
+	EditableText,
 } from '@blakron/ui';
 import { Tween, Ease } from '@blakron/game';
 
@@ -130,7 +131,8 @@ export class UIScene extends Sprite {
 		my = this._buildRects(this._col1, my) + SECTION_GAP;
 		my = this._buildSliders(this._col1, my) + SECTION_GAP;
 		my = this._buildToggleSwitch(this._col1, my) + SECTION_GAP;
-		this._buildViewStack(this._col1, my);
+		my = this._buildViewStack(this._col1, my) + SECTION_GAP;
+		this._buildTextInput(this._col1, my);
 
 		// ── Right column ──────────────────────────────────────────────────
 		let ry = 55;
@@ -701,6 +703,79 @@ export class UIScene extends Sprite {
 		});
 
 		return y + HEADER_H + 80 + 28 + 8;
+	}
+
+	// ── TextInput / EditableText ───────────────────────────────────────────
+
+	private _buildTextInput(x: number, y: number): number {
+		const g = sectionGroup('EditableText / TextInput', x, y);
+		this.addChild(g);
+
+		// ── EditableText (bare, with prompt) ──────────────────────────────
+		const etLabel = new TextField();
+		etLabel.text = 'EditableText (with prompt):';
+		etLabel.textColor = 0x636e72;
+		etLabel.size = 11;
+		etLabel.y = HEADER_H;
+		g.addChild(etLabel);
+
+		const et = new EditableText();
+		et.width = 240;
+		et.height = 36;
+		et.y = HEADER_H + 18;
+		et.size = 14;
+		et.textColor = 0xdfe6e9;
+		et.prompt = 'Type something…';
+		et.promptColor = 0x636e72;
+
+		// Background border
+		const etBg = new Rect(240, 36, 0x16213e);
+		etBg.strokeColor = 0x636e72;
+		etBg.strokeWeight = 1;
+		g.addChild(etBg);
+		etBg.y = HEADER_H + 18;
+
+		g.addChild(et);
+
+		// Live value display
+		const etValue = new TextField();
+		etValue.text = 'value: (empty)';
+		etValue.textColor = 0x636e72;
+		etValue.size = 11;
+		etValue.y = HEADER_H + 60;
+		g.addChild(etValue);
+
+		et.addEventListener(Event.CHANGE, () => {
+			etValue.text = `value: "${et.text}"`;
+		});
+
+		// ── Password mode ─────────────────────────────────────────────────
+		const pwLabel = new TextField();
+		pwLabel.text = 'Password mode:';
+		pwLabel.textColor = 0x636e72;
+		pwLabel.size = 11;
+		pwLabel.y = HEADER_H + 80;
+		g.addChild(pwLabel);
+
+		const pw = new EditableText();
+		pw.width = 240;
+		pw.height = 36;
+		pw.y = HEADER_H + 98;
+		pw.size = 14;
+		pw.textColor = 0xdfe6e9;
+		pw.displayAsPassword = true;
+		pw.prompt = 'Enter password…';
+		pw.promptColor = 0x636e72;
+
+		const pwBg = new Rect(240, 36, 0x16213e);
+		pwBg.strokeColor = 0x636e72;
+		pwBg.strokeWeight = 1;
+		pwBg.y = HEADER_H + 98;
+		g.addChild(pwBg);
+
+		g.addChild(pw);
+
+		return y + HEADER_H + 98 + 36 + 8;
 	}
 
 	// ── Scroller ───────────────────────────────────────────────────────────

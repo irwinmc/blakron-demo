@@ -12,11 +12,11 @@ importers:
         specifier: ^0.3.11
         version: 0.3.11
       '@blakron/game':
-        specifier: ^0.1.3
-        version: 0.1.3
+        specifier: ^0.2.0
+        version: 0.2.0
       '@blakron/ui':
-        specifier: ^0.2.5
-        version: 0.2.5
+        specifier: ^0.3.0
+        version: 0.3.0
     devDependencies:
       typescript:
         specifier: ^5.6.0
@@ -30,11 +30,11 @@ packages:
   '@blakron/core@0.3.11':
     resolution: {integrity: sha512-RqECf2LxwNVTRBG3itc/jbExysnyoV0OuIDS3TrtDAsNeKady5YM5Onf8WozUOG9FcPr9Gm4f2eFNqM1L9A5yw==}
 
-  '@blakron/game@0.1.3':
-    resolution: {integrity: sha512-En1yAd/uaRe9MT2jjw3cVVl2Axei9kz7fvsTrTvAKySBRQ/3omzOC0DCTA0XXUdMBkMlBH2v3QVHA91RU2rVEw==}
+  '@blakron/game@0.2.0':
+    resolution: {integrity: sha512-o9xkN7ZKYDq2Iw5k6mHgq7UlM5r2zUAzgyZdZH2dLWVWCkuFHAgJfnVcc6M32T68g1jIQfjySXO8hPjrkKJ6sg==}
 
-  '@blakron/ui@0.2.5':
-    resolution: {integrity: sha512-gip7qK/jgUIR58g0+pxU1AeKBhS6ZoItp2QdsPFqP/ibBGp9j0+x4kok2fxbXgFhssOlGjYdQXGn1Y2Tnmh13Q==}
+  '@blakron/ui@0.3.0':
+    resolution: {integrity: sha512-41WU1Rxsq6JkcR0ZBPmrM3leBlx2n8UQQ50sLnaCGzRMq/H141t3zRvA6SQEhtRaDMUc/o67WU2IfA1hA4zCPQ==}
 
   '@emnapi/core@1.10.0':
     resolution: {integrity: sha512-yq6OkJ4p82CAfPl0u9mQebQHKPJkY7WrIuk205cTYnYe+k2Z8YBh11FrbRG/H6ihirqcacOgl2BIO8oyMQLeXw==}
@@ -331,11 +331,11 @@ snapshots:
 
   '@blakron/core@0.3.11': {}
 
-  '@blakron/game@0.1.3':
+  '@blakron/game@0.2.0':
     dependencies:
       '@blakron/core': 0.3.11
 
-  '@blakron/ui@0.2.5':
+  '@blakron/ui@0.3.0':
     dependencies:
       '@blakron/core': 0.3.11
 

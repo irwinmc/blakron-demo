@@ -459,6 +459,7 @@ function buildImageLoadingPage(nav: Navigator): Sprite {
 		content.addChild(statusTf);
 
 		const loader = new ImageLoader();
+		const imgY = cy; // 固定 y 坐标，避免异步回调时 cy 已被更新
 		loader.addEventListener(Event.COMPLETE, () => {
 			if (!loader.data) return;
 			content.removeChild(placeholder);
@@ -466,7 +467,7 @@ function buildImageLoadingPage(nav: Navigator): Sprite {
 			tex.setBitmapData(loader.data);
 			const bmp = new Bitmap(tex);
 			bmp.x = 16;
-			bmp.y = cy;
+			bmp.y = imgY;
 			bmp.width = imgSize;
 			bmp.height = imgSize;
 			content.addChild(bmp);

@@ -1,6 +1,6 @@
 import { Sprite, Shape, TextField, TouchEvent, Event } from '@blakron/core';
-import { Button, Label, Panel, CheckBox } from '@blakron/ui';
-import { compileEXML, parseEXML } from '../exml/index.js';
+import { Button, Label, Panel, CheckBox, type Skin } from '@blakron/ui';
+import { compileEXML } from '../exml/index.js';
 import * as BlakronCore from '@blakron/core';
 import * as BlakronUI from '@blakron/ui';
 
@@ -104,7 +104,7 @@ const EXAMPLES: ExmlExample[] = [
  * Compile EXML source to a Skin factory function and execute it.
  * Replaces ES module imports with values from already-loaded packages.
  */
-function exmlToSkinFactory(source: string): (() => InstanceType<typeof import('@blakron/ui').Skin>) | null {
+function exmlToSkinFactory(source: string): (() => Skin) | null {
 	try {
 		let js = compileEXML(source);
 
@@ -132,7 +132,7 @@ function exmlToSkinFactory(source: string): (() => InstanceType<typeof import('@
 		const paramNames = Object.keys(symbols);
 		const paramValues = Object.values(symbols);
 		const fn = new Function(...paramNames, js);
-		return fn(...paramValues) as () => InstanceType<typeof import('@blakron/ui').Skin>;
+		return fn(...paramValues) as () => Skin;
 	} catch (e) {
 		console.error('[EXMLScene] Failed to compile EXML:', e);
 		return null;
@@ -336,7 +336,7 @@ export class EXMLScene extends Sprite {
 
 	// ── Render each example ───────────────────────────────────────────────────
 
-	private _renderExample(idx: number, factory: () => unknown): void {
+	private _renderExample(idx: number, factory: () => Skin): void {
 		const rc = this._renderContainer;
 		const ex = EXAMPLES[idx];
 
@@ -368,7 +368,7 @@ export class EXMLScene extends Sprite {
 
 				const btn = new Button();
 				btn.label = state === 'disabled' ? 'Disabled' : 'Click Me';
-				btn.skinName = factory as new () => InstanceType<typeof import('@blakron/ui').Skin>;
+				btn.skinName = factory as unknown as new () => Skin;
 				btn.width = 160;
 				btn.height = 44;
 				btn.x = 0;
@@ -387,7 +387,7 @@ export class EXMLScene extends Sprite {
 			// Card Panel skin — Panel has titleDisplay as a built-in skin part
 			const panel = new Panel();
 			panel.title = 'Card Title';
-			panel.skinName = factory as new () => InstanceType<typeof import('@blakron/ui').Skin>;
+			panel.skinName = factory as unknown as new () => Skin;
 			panel.width = 280;
 			panel.height = 160;
 			panel.y = 24;
@@ -412,7 +412,7 @@ export class EXMLScene extends Sprite {
 			['Option A', 'Option B', 'Option C'].forEach((label, i) => {
 				const cb = new CheckBox();
 				cb.label = label;
-				cb.skinName = factory as new () => InstanceType<typeof import('@blakron/ui').Skin>;
+				cb.skinName = factory as unknown as new () => Skin;
 				cb.width = 180;
 				cb.height = 28;
 				cb.y = 50 + i * 36;
@@ -447,7 +447,7 @@ export class EXMLScene extends Sprite {
 
 				const btn = new Button();
 				btn.label = state === 'disabled' ? 'Disabled' : 'Legacy Button';
-				btn.skinName = factory as new () => InstanceType<typeof import('@blakron/ui').Skin>;
+				btn.skinName = factory as unknown as new () => Skin;
 				btn.width = 160;
 				btn.height = 44;
 				btn.x = 0;

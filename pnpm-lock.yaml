@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@blakron/core':
-        specifier: ^0.3.11
+        specifier: 0.3.11
         version: 0.3.11
       '@blakron/game':
         specifier: ^0.2.0
-        version: 0.2.0
+        version: 0.2.1
       '@blakron/ui':
         specifier: ^0.3.0
         version: 0.3.0
@@ -30,8 +30,8 @@ packages:
   '@blakron/core@0.3.11':
     resolution: {integrity: sha512-RqECf2LxwNVTRBG3itc/jbExysnyoV0OuIDS3TrtDAsNeKady5YM5Onf8WozUOG9FcPr9Gm4f2eFNqM1L9A5yw==}
 
-  '@blakron/game@0.2.0':
-    resolution: {integrity: sha512-o9xkN7ZKYDq2Iw5k6mHgq7UlM5r2zUAzgyZdZH2dLWVWCkuFHAgJfnVcc6M32T68g1jIQfjySXO8hPjrkKJ6sg==}
+  '@blakron/game@0.2.1':
+    resolution: {integrity: sha512-8/meuHw/kAKyv5s9zIz72IZvclZcGsPgwaqzXUELNKswjSHjaCVmWX9zXICxAZSvLn0wcB3oPyxaZyKnffO7Nw==}
 
   '@blakron/ui@0.3.0':
     resolution: {integrity: sha512-41WU1Rxsq6JkcR0ZBPmrM3leBlx2n8UQQ50sLnaCGzRMq/H141t3zRvA6SQEhtRaDMUc/o67WU2IfA1hA4zCPQ==}
@@ -331,7 +331,7 @@ snapshots:
 
   '@blakron/core@0.3.11': {}
 
-  '@blakron/game@0.2.0':
+  '@blakron/game@0.2.1':
     dependencies:
       '@blakron/core': 0.3.11
 

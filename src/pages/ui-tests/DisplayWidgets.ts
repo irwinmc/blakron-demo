@@ -93,7 +93,7 @@ function buildImage(content: Sprite, baseY: number): void {
 	const g = sectionGroup('Image (Black_Heron.webp)', baseY);
 	content.addChild(g);
 
-	const img = new Image('/assets/Black_Heron.webp');
+	const img = new Image('assets/Black_Heron.webp');
 	img.y = HEADER_H;
 	img.width = 200;
 	img.height = 130;

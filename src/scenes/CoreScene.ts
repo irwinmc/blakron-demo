@@ -368,7 +368,7 @@ export class CoreScene extends Sprite {
 			statusTf.text = '✗ Load failed';
 			statusTf.textColor = 0xe17055;
 		});
-		loader.load('/assets/img-red.svg');
+		loader.load('assets/img-red.svg');
 
 		// ── Right: resource batch ─────────────────────────────────────────────
 		const rox = this.cx(1);
@@ -420,8 +420,8 @@ export class CoreScene extends Sprite {
 			slots.push(slot);
 		});
 
-		resource.addResource({ name: 'img-green', url: '/assets/img-green.svg', type: ResourceType.Image });
-		resource.addResource({ name: 'img-blue', url: '/assets/img-blue.svg', type: ResourceType.Image });
+		resource.addResource({ name: 'img-green', url: 'assets/img-green.svg', type: ResourceType.Image });
+		resource.addResource({ name: 'img-blue', url: 'assets/img-blue.svg', type: ResourceType.Image });
 
 		let loadedCount = 0;
 		(async () => {

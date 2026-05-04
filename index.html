@@ -11,13 +11,20 @@
 				padding: 0;
 				width: 100%;
 				height: 100%;
-				background: black;
+				background: #111;
 				overflow: hidden;
+				display: flex;
+				align-items: center;
+				justify-content: center;
 			}
 			canvas {
 				display: block;
-				width: 100vw;
+				/* 保持 640:1136 宽高比，高度撑满屏幕，宽度自适应 */
 				height: 100vh;
+				width: auto;
+				aspect-ratio: 640 / 1136;
+				/* 如果屏幕比手机宽，两侧留黑边 */
+				max-width: 100vw;
 			}
 		</style>
 	</head>

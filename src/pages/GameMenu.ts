@@ -1,14 +1,7 @@
 import { Sprite, Bitmap, BitmapData, Texture, TextField, Shape } from '@blakron/core';
 import { Tween, Ease, MovieClip, MovieClipData } from '@blakron/game';
 import { Label } from '@blakron/ui';
-import {
-	createTitleBar,
-	createContentArea,
-	createMenuCard,
-	CONTENT_W,
-	CARD_H,
-	CARD_GAP,
-} from './common.js';
+import { createTitleBar, createContentArea, createMenuCard, CONTENT_W, CARD_H, CARD_GAP } from './common.js';
 import { Navigator } from '../Navigator.js';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -74,10 +67,10 @@ function buildBasicTweenPage(nav: Navigator): Sprite {
 		header.width = CONTENT_W - 32;
 		header.height = 22;
 		header.textColor = 0xb2bec3;
-		header.size = 14;
+		header.size = 16;
 		header.bold = true;
 		content.addChild(header);
-		cy += 32;
+		cy += 36;
 
 		// Ball 1: x + alpha
 		const ball = new Bitmap(makeCircleTexture(24, '#ff6b6b'));
@@ -89,14 +82,14 @@ function buildBasicTweenPage(nav: Navigator): Sprite {
 		ballLabel.x = 30;
 		ballLabel.y = cy + 32;
 		ballLabel.textColor = 0x636e72;
-		ballLabel.size = 11;
+		ballLabel.size = 13;
 		content.addChild(ballLabel);
 
 		Tween.get(ball, { loop: true })
 			.to({ x: 350, alpha: 0.3 }, 1500, Ease.sineInOut)
 			.to({ x: 30, alpha: 1.0 }, 1500, Ease.sineInOut);
 
-		cy += 64;
+		cy += 68;
 
 		// Ball 2: x with bounce
 		const ball2 = new Bitmap(makeCircleTexture(20, '#48dbfb'));
@@ -108,7 +101,7 @@ function buildBasicTweenPage(nav: Navigator): Sprite {
 		ball2Label.x = 30;
 		ball2Label.y = cy + 30;
 		ball2Label.textColor = 0x636e72;
-		ball2Label.size = 11;
+		ball2Label.size = 13;
 		content.addChild(ball2Label);
 
 		Tween.get(ball2, { loop: true })
@@ -130,7 +123,7 @@ function buildBasicTweenPage(nav: Navigator): Sprite {
 		trackLabel.y = cy + 6;
 		trackLabel.width = 360;
 		trackLabel.textColor = 0x636e72;
-		trackLabel.size = 11;
+		trackLabel.size = 13;
 		trackLabel.textAlign = 'center';
 		content.addChild(trackLabel);
 	});
@@ -146,10 +139,10 @@ function buildChainedTweenPage(nav: Navigator): Sprite {
 		header.width = CONTENT_W - 32;
 		header.height = 22;
 		header.textColor = 0xb2bec3;
-		header.size = 14;
+		header.size = 16;
 		header.bold = true;
 		content.addChild(header);
-		cy += 36;
+		cy += 40;
 
 		const ball = new Bitmap(makeCircleTexture(28, '#feca57'));
 		ball.x = 120;
@@ -180,11 +173,11 @@ function buildChainedTweenPage(nav: Navigator): Sprite {
 			tf.x = 24;
 			tf.y = cy;
 			tf.width = CONTENT_W - 48;
-			tf.height = 20;
+			tf.height = 22;
 			tf.textColor = 0x636e72;
-			tf.size = 12;
+			tf.size = 14;
 			content.addChild(tf);
-			cy += 22;
+			cy += 24;
 		});
 	});
 }
@@ -199,10 +192,10 @@ function buildEaseShowcasePage(nav: Navigator): Sprite {
 		header.width = CONTENT_W - 32;
 		header.height = 22;
 		header.textColor = 0xb2bec3;
-		header.size = 14;
+		header.size = 16;
 		header.bold = true;
 		content.addChild(header);
-		cy += 32;
+		cy += 36;
 
 		const eases: { name: string; fn: (t: number) => number; color: string }[] = [
 			{ name: 'linear', fn: Ease.linear, color: '#ff6b6b' },
@@ -227,7 +220,7 @@ function buildEaseShowcasePage(nav: Navigator): Sprite {
 			const nameTf = new TextField();
 			nameTf.text = e.name;
 			nameTf.textColor = 0xdfe6e9;
-			nameTf.size = 12;
+			nameTf.size = 14;
 			nameTf.width = 110;
 			nameTf.height = 20;
 			row.addChild(nameTf);
@@ -257,10 +250,10 @@ function buildMovieClipPage(nav: Navigator): Sprite {
 		header.width = CONTENT_W - 32;
 		header.height = 22;
 		header.textColor = 0xb2bec3;
-		header.size = 14;
+		header.size = 16;
 		header.bold = true;
 		content.addChild(header);
-		cy += 32;
+		cy += 36;
 
 		// Generate 8 frames
 		const textures: Texture[] = [];
@@ -283,7 +276,7 @@ function buildMovieClipPage(nav: Navigator): Sprite {
 		mc1Label.width = 60;
 		mc1Label.height = 16;
 		mc1Label.textColor = 0x636e72;
-		mc1Label.size = 10;
+		mc1Label.size = 12;
 		content.addChild(mc1Label);
 
 		// MC2: 20fps
@@ -300,7 +293,7 @@ function buildMovieClipPage(nav: Navigator): Sprite {
 		mc2Label.width = 60;
 		mc2Label.height = 16;
 		mc2Label.textColor = 0x636e72;
-		mc2Label.size = 10;
+		mc2Label.size = 12;
 		content.addChild(mc2Label);
 
 		// MC3: 1.5× scaled
@@ -318,7 +311,7 @@ function buildMovieClipPage(nav: Navigator): Sprite {
 		mc3Label.width = 80;
 		mc3Label.height = 16;
 		mc3Label.textColor = 0x636e72;
-		mc3Label.size = 10;
+		mc3Label.size = 12;
 		content.addChild(mc3Label);
 
 		// Info
@@ -333,11 +326,11 @@ function buildMovieClipPage(nav: Navigator): Sprite {
 			tf.x = 24;
 			tf.y = cy;
 			tf.width = CONTENT_W - 48;
-			tf.height = 20;
+			tf.height = 22;
 			tf.textColor = 0x636e72;
-			tf.size = 12;
+			tf.size = 14;
 			content.addChild(tf);
-			cy += 22;
+			cy += 24;
 		});
 	});
 }
@@ -352,10 +345,10 @@ function buildOrbitPage(nav: Navigator): Sprite {
 		header.width = CONTENT_W - 32;
 		header.height = 22;
 		header.textColor = 0xb2bec3;
-		header.size = 14;
+		header.size = 16;
 		header.bold = true;
 		content.addChild(header);
-		cy += 36;
+		cy += 40;
 
 		const orbitCenter = new Sprite();
 		orbitCenter.x = CONTENT_W / 2;
@@ -408,11 +401,11 @@ function buildOrbitPage(nav: Navigator): Sprite {
 			tf.x = 24;
 			tf.y = cy;
 			tf.width = CONTENT_W - 48;
-			tf.height = 20;
+			tf.height = 22;
 			tf.textColor = 0x636e72;
-			tf.size = 12;
+			tf.size = 14;
 			content.addChild(tf);
-			cy += 22;
+			cy += 24;
 		});
 	});
 }
@@ -479,7 +472,7 @@ export function createGameMenu(nav: Navigator): Sprite {
 	subtitle.width = CONTENT_W - 32;
 	subtitle.height = 20;
 	subtitle.textColor = 0x636e72;
-	subtitle.size = 12;
+	subtitle.size = 14;
 	content.addChild(subtitle);
 
 	// Cards

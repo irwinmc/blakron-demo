@@ -47,7 +47,7 @@ export function createMainMenu(nav: Navigator): Sprite {
 	const heroTitle = new TextField();
 	heroTitle.text = 'Blakron Demo';
 	heroTitle.textColor = 0xffffff;
-	heroTitle.size = 28;
+	heroTitle.size = 32;
 	heroTitle.bold = true;
 	heroTitle.x = 24;
 	heroTitle.y = 20;
@@ -59,7 +59,7 @@ export function createMainMenu(nav: Navigator): Sprite {
 	heroSub.y = 56;
 	heroSub.width = CONTENT_W - 48;
 	heroSub.textColor = 0xb2bec3;
-	heroSub.size = 13;
+	heroSub.size = 16;
 	banner.addChild(heroSub);
 
 	// Version info
@@ -67,7 +67,7 @@ export function createMainMenu(nav: Navigator): Sprite {
 	versionTf.x = 24;
 	versionTf.y = 84;
 	versionTf.textColor = 0x636e72;
-	versionTf.size = 11;
+	versionTf.size = 14;
 	banner.addChild(versionTf);
 
 	// ── Categories ─────────────────────────────────────────────────────────
@@ -112,16 +112,16 @@ export function createMainMenu(nav: Navigator): Sprite {
 	sectionLabel.y = 0;
 	sectionLabel.width = CONTENT_W - 32;
 	sectionLabel.textColor = 0x636e72;
-	sectionLabel.size = 11;
+	sectionLabel.size = 14;
 	sectionLabel.bold = true;
 	content.addChild(sectionLabel);
 
 	// Larger cards for the main menu (96px height)
-	const BIG_CARD_H = 96;
+	const BIG_CARD_H = 104;
 	let cy = 22;
 	categories.forEach(cat => {
 		const card = new Sprite();
-		card.x = 12;
+		card.x = 14;
 		card.y = cy;
 		card.touchEnabled = true;
 
@@ -157,28 +157,28 @@ export function createMainMenu(nav: Navigator): Sprite {
 		iconTf.textAlign = 'center';
 		iconTf.verticalAlign = 'middle';
 		iconTf.textColor = cat.accent;
-		iconTf.size = 20;
+		iconTf.size = 22;
 		card.addChild(iconTf);
 
 		// Title
 		const title = new Label(cat.title);
 		title.x = 76;
-		title.y = 14;
+		title.y = 28;
 		title.width = w - 110;
-		title.height = 24;
+		title.height = 26;
 		title.textColor = 0xffffff;
-		title.size = 17;
+		title.size = 20;
 		title.bold = true;
 		card.addChild(title);
 
 		// Description
 		const desc = new Label(cat.description);
 		desc.x = 76;
-		desc.y = 42;
+		desc.y = 58;
 		desc.width = w - 110;
-		desc.height = 42;
+		desc.height = 44;
 		desc.textColor = 0xb2bec3;
-		desc.size = 12;
+		desc.size = 16;
 		card.addChild(desc);
 
 		// Arrow
@@ -190,7 +190,7 @@ export function createMainMenu(nav: Navigator): Sprite {
 		arrow.textAlign = 'center';
 		arrow.verticalAlign = 'middle';
 		arrow.textColor = cat.accent;
-		arrow.size = 24;
+		arrow.size = 26;
 		card.addChild(arrow);
 
 		card.addEventListener(TouchEvent.TOUCH_TAP, cat.onTap);

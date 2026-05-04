@@ -9,14 +9,14 @@ importers:
   .:
     dependencies:
       '@blakron/core':
-        specifier: 0.5.1
-        version: 0.5.1
+        specifier: 0.5.2
+        version: 0.5.2
       '@blakron/game':
         specifier: ^0.2.2
         version: 0.2.2
       '@blakron/ui':
-        specifier: ^0.3.1
-        version: 0.3.1
+        specifier: ^0.3.3
+        version: 0.3.3
     devDependencies:
       typescript:
         specifier: ^5.6.0
@@ -27,14 +27,14 @@ importers:
 
 packages:
 
-  '@blakron/core@0.5.1':
-    resolution: {integrity: sha512-dAIJCnyKvKA2lh9dxVmjOJlys1JLGO0eEPavlyQ50zmJtLq8fZVkzx88ETrngfKbu+Yzd9B7UeHPornT6ic0mA==}
+  '@blakron/core@0.5.2':
+    resolution: {integrity: sha512-GEes3/YINAOP0X2AsBmo11ouju5zP9IeByMQxjikTEcJt4ZUw7xUT1h389vzqxdWQ+ChSWCV3OABMmnvr9lKeQ==}
 
   '@blakron/game@0.2.2':
     resolution: {integrity: sha512-fENwdSii9g8vcj+YH1+G4yfS6bsALWqgw6iC0fdUKJFKdO/sMaUD3uu+k4NLp5dEQtn5Y4L82e09kfh6Hvu4Ig==}
 
-  '@blakron/ui@0.3.1':
-    resolution: {integrity: sha512-VYEJITZSplVsSor+e7YsVhn8rKzzvH3kxafjr0L8hDv76YVci/ONo3xkXpwrKt+an80nhd6oytN2/YiYVEiAAw==}
+  '@blakron/ui@0.3.3':
+    resolution: {integrity: sha512-PSfcMOC8OynH6cHQbef3QaV1xozVHl28VRuyj98EChXSAlozflhSOBPKfK+/vR4WGRYR18w24GONieXXsPfxdw==}
 
   '@emnapi/core@1.10.0':
     resolution: {integrity: sha512-yq6OkJ4p82CAfPl0u9mQebQHKPJkY7WrIuk205cTYnYe+k2Z8YBh11FrbRG/H6ihirqcacOgl2BIO8oyMQLeXw==}
@@ -329,15 +329,15 @@ packages:
 
 snapshots:
 
-  '@blakron/core@0.5.1': {}
+  '@blakron/core@0.5.2': {}
 
   '@blakron/game@0.2.2':
     dependencies:
-      '@blakron/core': 0.5.1
+      '@blakron/core': 0.5.2
 
-  '@blakron/ui@0.3.1':
+  '@blakron/ui@0.3.3':
     dependencies:
-      '@blakron/core': 0.5.1
+      '@blakron/core': 0.5.2
 
   '@emnapi/core@1.10.0':
     dependencies:

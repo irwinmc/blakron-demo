@@ -5,7 +5,7 @@ import { Label, Rect } from '@blakron/ui';
 
 export const CONTENT_W = 640;
 export const TITLE_BAR_H = 44;
-export const CARD_H = 72;
+export const CARD_H = 80;
 export const CARD_GAP = 8;
 
 // ── Menu card config ─────────────────────────────────────────────────────────
@@ -48,7 +48,7 @@ export function createTitleBar(title: string, onBack?: () => void): Sprite {
 		backLbl.textAlign = 'center';
 		backLbl.verticalAlign = 'middle';
 		backLbl.textColor = 0xdfe6e9;
-		backLbl.size = 13;
+		backLbl.size = 15;
 		backBtn.addChild(backLbl);
 
 		backBtn.addEventListener(TouchEvent.TOUCH_TAP, onBack);
@@ -63,7 +63,7 @@ export function createTitleBar(title: string, onBack?: () => void): Sprite {
 	titleLbl.height = TITLE_BAR_H;
 	titleLbl.verticalAlign = 'middle';
 	titleLbl.textColor = 0xffffff;
-	titleLbl.size = 16;
+	titleLbl.size = 18;
 	titleLbl.bold = true;
 	bar.addChild(titleLbl);
 
@@ -107,7 +107,7 @@ export function createMenuCard(config: MenuCardConfig, y: number): Sprite {
 	title.width = w - 24;
 	title.height = 24;
 	title.textColor = 0xffffff;
-	title.size = 15;
+	title.size = 17;
 	title.bold = true;
 	card.addChild(title);
 
@@ -118,7 +118,7 @@ export function createMenuCard(config: MenuCardConfig, y: number): Sprite {
 	desc.width = w - 24;
 	desc.height = 28;
 	desc.textColor = 0xb2bec3;
-	desc.size = 12;
+	desc.size = 14;
 	card.addChild(desc);
 
 	// Arrow indicator
@@ -130,7 +130,7 @@ export function createMenuCard(config: MenuCardConfig, y: number): Sprite {
 	arrow.textAlign = 'center';
 	arrow.verticalAlign = 'middle';
 	arrow.textColor = config.accent;
-	arrow.size = 22;
+	arrow.size = 24;
 	card.addChild(arrow);
 
 	card.addEventListener(TouchEvent.TOUCH_TAP, config.onTap);

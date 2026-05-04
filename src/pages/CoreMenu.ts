@@ -76,7 +76,7 @@ function buildShapesPage(nav: Navigator): Sprite {
 		header.width = CONTENT_W - 32;
 		header.height = 22;
 		header.textColor = 0xb2bec3;
-		header.size = 14;
+		header.size = 16;
 		header.bold = true;
 		content.addChild(header);
 		cy += 30;
@@ -135,7 +135,7 @@ function buildShapesPage(nav: Navigator): Sprite {
 			tf.width = CONTENT_W - 48;
 			tf.height = 20;
 			tf.textColor = 0x636e72;
-			tf.size = 12;
+			tf.size = 14;
 			content.addChild(tf);
 			cy += 22;
 		});
@@ -152,7 +152,7 @@ function buildGraphicsBitmapPage(nav: Navigator): Sprite {
 		header.width = CONTENT_W - 32;
 		header.height = 22;
 		header.textColor = 0xb2bec3;
-		header.size = 14;
+		header.size = 16;
 		header.bold = true;
 		content.addChild(header);
 		cy += 36;
@@ -205,7 +205,7 @@ function buildGraphicsBitmapPage(nav: Navigator): Sprite {
 			tf.width = CONTENT_W - 48;
 			tf.height = 20;
 			tf.textColor = 0x636e72;
-			tf.size = 12;
+			tf.size = 14;
 			content.addChild(tf);
 			cy += 22;
 		});
@@ -223,7 +223,7 @@ function buildTextFiltersPage(nav: Navigator): Sprite {
 		header1.width = CONTENT_W - 32;
 		header1.height = 22;
 		header1.textColor = 0xb2bec3;
-		header1.size = 14;
+		header1.size = 16;
 		header1.bold = true;
 		content.addChild(header1);
 		cy += 28;
@@ -231,7 +231,7 @@ function buildTextFiltersPage(nav: Navigator): Sprite {
 		const tf1 = new TextField();
 		tf1.text = 'Hello Blakron!';
 		tf1.textColor = 0xfeca57;
-		tf1.size = 22;
+		tf1.size = 24;
 		tf1.bold = true;
 		tf1.x = 16;
 		tf1.y = cy;
@@ -241,7 +241,7 @@ function buildTextFiltersPage(nav: Navigator): Sprite {
 		const tf2 = new TextField();
 		tf2.text = 'Multi-line\ntext field';
 		tf2.textColor = 0xdfe6e9;
-		tf2.size = 16;
+		tf2.size = 18;
 		tf2.x = 16;
 		tf2.y = cy;
 		content.addChild(tf2);
@@ -250,7 +250,7 @@ function buildTextFiltersPage(nav: Navigator): Sprite {
 		const tf3 = new TextField();
 		tf3.text = '描边文字';
 		tf3.textColor = 0xffffff;
-		tf3.size = 20;
+		tf3.size = 22;
 		tf3.stroke = 2;
 		tf3.strokeColor = 0x000000;
 		tf3.x = 16;
@@ -265,7 +265,7 @@ function buildTextFiltersPage(nav: Navigator): Sprite {
 		header2.width = CONTENT_W - 32;
 		header2.height = 22;
 		header2.textColor = 0xb2bec3;
-		header2.size = 14;
+		header2.size = 16;
 		header2.bold = true;
 		content.addChild(header2);
 		cy += 32;
@@ -284,7 +284,7 @@ function buildTextFiltersPage(nav: Navigator): Sprite {
 		blurLabel.x = 16;
 		blurLabel.y = cy + 62;
 		blurLabel.textColor = 0x636e72;
-		blurLabel.size = 11;
+		blurLabel.size = 13;
 		content.addChild(blurLabel);
 
 		// Glow
@@ -301,7 +301,7 @@ function buildTextFiltersPage(nav: Navigator): Sprite {
 		glowLabel.x = 120;
 		glowLabel.y = cy + 62;
 		glowLabel.textColor = 0x636e72;
-		glowLabel.size = 11;
+		glowLabel.size = 13;
 		content.addChild(glowLabel);
 
 		// ColorMatrix
@@ -317,7 +317,7 @@ function buildTextFiltersPage(nav: Navigator): Sprite {
 		cmLabel.x = 240;
 		cmLabel.y = cy + 62;
 		cmLabel.textColor = 0x636e72;
-		cmLabel.size = 11;
+		cmLabel.size = 13;
 		content.addChild(cmLabel);
 	});
 }
@@ -332,7 +332,7 @@ function buildEventsPage(nav: Navigator): Sprite {
 		header.width = CONTENT_W - 32;
 		header.height = 22;
 		header.textColor = 0xb2bec3;
-		header.size = 14;
+		header.size = 16;
 		header.bold = true;
 		content.addChild(header);
 		cy += 36;
@@ -354,7 +354,7 @@ function buildEventsPage(nav: Navigator): Sprite {
 		const btnLabel = new TextField();
 		btnLabel.text = 'Tap me! (0)';
 		btnLabel.textColor = 0xffffff;
-		btnLabel.size = 18;
+		btnLabel.size = 20;
 		btnLabel.x = 0;
 		btnLabel.y = 0;
 		btnLabel.width = btnW;
@@ -380,7 +380,7 @@ function buildEventsPage(nav: Navigator): Sprite {
 		hint.y = cy + btnH + 12;
 		hint.width = CONTENT_W - 32;
 		hint.textColor = 0x636e72;
-		hint.size = 12;
+		hint.size = 14;
 		content.addChild(hint);
 		cy += btnH + 40;
 
@@ -391,7 +391,7 @@ function buildEventsPage(nav: Navigator): Sprite {
 		rgHeader.width = CONTENT_W - 32;
 		rgHeader.height = 22;
 		rgHeader.textColor = 0xb2bec3;
-		rgHeader.size = 14;
+		rgHeader.size = 16;
 		rgHeader.bold = true;
 		content.addChild(rgHeader);
 		cy += 30;
@@ -418,7 +418,7 @@ function buildEventsPage(nav: Navigator): Sprite {
 		rgInfo.y = cy + 8;
 		rgInfo.width = CONTENT_W - 180;
 		rgInfo.textColor = 0x636e72;
-		rgInfo.size = 12;
+		rgInfo.size = 14;
 		content.addChild(rgInfo);
 	});
 }
@@ -434,7 +434,7 @@ function buildImageLoadingPage(nav: Navigator): Sprite {
 		header1.width = CONTENT_W - 32;
 		header1.height = 22;
 		header1.textColor = 0xb2bec3;
-		header1.size = 14;
+		header1.size = 16;
 		header1.bold = true;
 		content.addChild(header1);
 		cy += 30;
@@ -452,7 +452,7 @@ function buildImageLoadingPage(nav: Navigator): Sprite {
 		const statusTf = new TextField();
 		statusTf.text = 'Loading...';
 		statusTf.textColor = 0x636e72;
-		statusTf.size = 13;
+		statusTf.size = 15;
 		statusTf.x = 16 + imgSize + 16;
 		statusTf.y = cy + 16;
 		statusTf.width = 200;
@@ -489,7 +489,7 @@ function buildImageLoadingPage(nav: Navigator): Sprite {
 		header2.width = CONTENT_W - 32;
 		header2.height = 22;
 		header2.textColor = 0xb2bec3;
-		header2.size = 14;
+		header2.size = 16;
 		header2.bold = true;
 		content.addChild(header2);
 		cy += 30;
@@ -516,7 +516,7 @@ function buildImageLoadingPage(nav: Navigator): Sprite {
 		const batchStatus = new TextField();
 		batchStatus.text = '0 / 2';
 		batchStatus.textColor = 0x636e72;
-		batchStatus.size = 13;
+		batchStatus.size = 15;
 		batchStatus.x = 16;
 		batchStatus.y = cy + 16;
 		content.addChild(batchStatus);
@@ -631,7 +631,7 @@ export function createCoreMenu(nav: Navigator): Sprite {
 	subtitle.width = CONTENT_W - 32;
 	subtitle.height = 20;
 	subtitle.textColor = 0x636e72;
-	subtitle.size = 12;
+	subtitle.size = 14;
 	content.addChild(subtitle);
 
 	// Cards

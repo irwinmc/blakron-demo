@@ -166,7 +166,7 @@ function buildButtonSkinPage(nav: Navigator): Sprite {
 		desc.width = CONTENT_W - 32;
 		desc.height = 20;
 		desc.textColor = 0xb2bec3;
-		desc.size = 13;
+		desc.size = 15;
 		content.addChild(desc);
 		cy += 28;
 
@@ -177,7 +177,7 @@ function buildButtonSkinPage(nav: Navigator): Sprite {
 		srcHeader.width = 200;
 		srcHeader.height = 18;
 		srcHeader.textColor = 0x636e72;
-		srcHeader.size = 11;
+		srcHeader.size = 13;
 		srcHeader.bold = true;
 		content.addChild(srcHeader);
 		cy += 20;
@@ -187,7 +187,7 @@ function buildButtonSkinPage(nav: Navigator): Sprite {
 			const tf = new TextField();
 			tf.text = line.replace(/^\s+/, '');
 			tf.textColor = 0xa29bfe;
-			tf.size = 10;
+			tf.size = 12;
 			tf.x = 20;
 			tf.y = cy;
 			tf.width = CONTENT_W - 40;
@@ -204,7 +204,7 @@ function buildButtonSkinPage(nav: Navigator): Sprite {
 		previewHeader.width = 200;
 		previewHeader.height = 18;
 		previewHeader.textColor = 0x636e72;
-		previewHeader.size = 11;
+		previewHeader.size = 13;
 		previewHeader.bold = true;
 		content.addChild(previewHeader);
 		cy += 24;
@@ -217,7 +217,7 @@ function buildButtonSkinPage(nav: Navigator): Sprite {
 			statusTf.width = 200;
 			statusTf.height = 20;
 			statusTf.textColor = 0xdfe6e9;
-			statusTf.size = 13;
+			statusTf.size = 15;
 			content.addChild(statusTf);
 
 			['up', 'down', 'disabled'].forEach((state, i) => {
@@ -227,7 +227,7 @@ function buildButtonSkinPage(nav: Navigator): Sprite {
 				stateLabel.width = 60;
 				stateLabel.height = 20;
 				stateLabel.textColor = 0x636e72;
-				stateLabel.size = 11;
+				stateLabel.size = 13;
 				content.addChild(stateLabel);
 
 				const btn = new Button();
@@ -255,7 +255,7 @@ function buildButtonSkinPage(nav: Navigator): Sprite {
 			errTf.width = CONTENT_W - 32;
 			errTf.height = 20;
 			errTf.textColor = 0xe17055;
-			errTf.size = 12;
+			errTf.size = 14;
 			content.addChild(errTf);
 		}
 	});
@@ -271,7 +271,7 @@ function buildCardPanelPage(nav: Navigator): Sprite {
 		desc.width = CONTENT_W - 32;
 		desc.height = 20;
 		desc.textColor = 0xb2bec3;
-		desc.size = 13;
+		desc.size = 15;
 		content.addChild(desc);
 		cy += 28;
 
@@ -282,7 +282,7 @@ function buildCardPanelPage(nav: Navigator): Sprite {
 		srcHeader.width = 200;
 		srcHeader.height = 18;
 		srcHeader.textColor = 0x636e72;
-		srcHeader.size = 11;
+		srcHeader.size = 13;
 		srcHeader.bold = true;
 		content.addChild(srcHeader);
 		cy += 20;
@@ -292,7 +292,7 @@ function buildCardPanelPage(nav: Navigator): Sprite {
 			const tf = new TextField();
 			tf.text = line.replace(/^\s+/, '');
 			tf.textColor = 0xa29bfe;
-			tf.size = 10;
+			tf.size = 12;
 			tf.x = 20;
 			tf.y = cy;
 			tf.width = CONTENT_W - 40;
@@ -309,7 +309,7 @@ function buildCardPanelPage(nav: Navigator): Sprite {
 		previewHeader.width = 200;
 		previewHeader.height = 18;
 		previewHeader.textColor = 0x636e72;
-		previewHeader.size = 11;
+		previewHeader.size = 13;
 		previewHeader.bold = true;
 		content.addChild(previewHeader);
 		cy += 24;
@@ -340,7 +340,7 @@ function buildCardPanelPage(nav: Navigator): Sprite {
 			status.width = CONTENT_W - 32;
 			status.height = 20;
 			status.textColor = 0x00b894;
-			status.size = 12;
+			status.size = 14;
 			content.addChild(status);
 		} else {
 			const errTf = new Label('✗ Failed to compile EXML');
@@ -349,7 +349,7 @@ function buildCardPanelPage(nav: Navigator): Sprite {
 			errTf.width = CONTENT_W - 32;
 			errTf.height = 20;
 			errTf.textColor = 0xe17055;
-			errTf.size = 12;
+			errTf.size = 14;
 			content.addChild(errTf);
 		}
 	});
@@ -365,7 +365,7 @@ function buildCheckBoxSkinPage(nav: Navigator): Sprite {
 		desc.width = CONTENT_W - 32;
 		desc.height = 20;
 		desc.textColor = 0xb2bec3;
-		desc.size = 13;
+		desc.size = 15;
 		content.addChild(desc);
 		cy += 28;
 
@@ -376,7 +376,7 @@ function buildCheckBoxSkinPage(nav: Navigator): Sprite {
 		srcHeader.width = 200;
 		srcHeader.height = 18;
 		srcHeader.textColor = 0x636e72;
-		srcHeader.size = 11;
+		srcHeader.size = 13;
 		srcHeader.bold = true;
 		content.addChild(srcHeader);
 		cy += 20;
@@ -386,7 +386,7 @@ function buildCheckBoxSkinPage(nav: Navigator): Sprite {
 			const tf = new TextField();
 			tf.text = line.replace(/^\s+/, '');
 			tf.textColor = 0xa29bfe;
-			tf.size = 10;
+			tf.size = 12;
 			tf.x = 20;
 			tf.y = cy;
 			tf.width = CONTENT_W - 40;
@@ -403,7 +403,7 @@ function buildCheckBoxSkinPage(nav: Navigator): Sprite {
 		previewHeader.width = 200;
 		previewHeader.height = 18;
 		previewHeader.textColor = 0x636e72;
-		previewHeader.size = 11;
+		previewHeader.size = 13;
 		previewHeader.bold = true;
 		content.addChild(previewHeader);
 		cy += 24;
@@ -416,7 +416,7 @@ function buildCheckBoxSkinPage(nav: Navigator): Sprite {
 			statusTf.width = 200;
 			statusTf.height = 20;
 			statusTf.textColor = 0xdfe6e9;
-			statusTf.size = 13;
+			statusTf.size = 15;
 			content.addChild(statusTf);
 
 			['Option A', 'Option B', 'Option C'].forEach((label, i) => {
@@ -445,7 +445,7 @@ function buildCheckBoxSkinPage(nav: Navigator): Sprite {
 			errTf.width = CONTENT_W - 32;
 			errTf.height = 20;
 			errTf.textColor = 0xe17055;
-			errTf.size = 12;
+			errTf.size = 14;
 			content.addChild(errTf);
 		}
 	});
@@ -461,7 +461,7 @@ function buildLegacyStylePage(nav: Navigator): Sprite {
 		desc.width = CONTENT_W - 32;
 		desc.height = 20;
 		desc.textColor = 0xb2bec3;
-		desc.size = 13;
+		desc.size = 15;
 		content.addChild(desc);
 		cy += 28;
 
@@ -472,7 +472,7 @@ function buildLegacyStylePage(nav: Navigator): Sprite {
 		srcHeader.width = 200;
 		srcHeader.height = 18;
 		srcHeader.textColor = 0x636e72;
-		srcHeader.size = 11;
+		srcHeader.size = 13;
 		srcHeader.bold = true;
 		content.addChild(srcHeader);
 		cy += 20;
@@ -482,7 +482,7 @@ function buildLegacyStylePage(nav: Navigator): Sprite {
 			const tf = new TextField();
 			tf.text = line.replace(/^\s+/, '');
 			tf.textColor = 0xa29bfe;
-			tf.size = 10;
+			tf.size = 12;
 			tf.x = 20;
 			tf.y = cy;
 			tf.width = CONTENT_W - 40;
@@ -499,7 +499,7 @@ function buildLegacyStylePage(nav: Navigator): Sprite {
 		previewHeader.width = 200;
 		previewHeader.height = 18;
 		previewHeader.textColor = 0x636e72;
-		previewHeader.size = 11;
+		previewHeader.size = 13;
 		previewHeader.bold = true;
 		content.addChild(previewHeader);
 		cy += 24;
@@ -512,7 +512,7 @@ function buildLegacyStylePage(nav: Navigator): Sprite {
 			statusTf.width = 200;
 			statusTf.height = 20;
 			statusTf.textColor = 0xdfe6e9;
-			statusTf.size = 13;
+			statusTf.size = 15;
 			content.addChild(statusTf);
 
 			(['up', 'disabled'] as const).forEach((state, i) => {
@@ -522,7 +522,7 @@ function buildLegacyStylePage(nav: Navigator): Sprite {
 				stateLabel.width = 60;
 				stateLabel.height = 20;
 				stateLabel.textColor = 0x636e72;
-				stateLabel.size = 11;
+				stateLabel.size = 13;
 				content.addChild(stateLabel);
 
 				const btn = new Button();
@@ -546,7 +546,7 @@ function buildLegacyStylePage(nav: Navigator): Sprite {
 			errTf.width = CONTENT_W - 32;
 			errTf.height = 20;
 			errTf.textColor = 0xe17055;
-			errTf.size = 12;
+			errTf.size = 14;
 			content.addChild(errTf);
 		}
 	});
@@ -562,7 +562,7 @@ function buildAllExamplesPage(nav: Navigator): Sprite {
 		header.width = CONTENT_W - 32;
 		header.height = 22;
 		header.textColor = 0xb2bec3;
-		header.size = 14;
+		header.size = 16;
 		header.bold = true;
 		content.addChild(header);
 		cy += 32;
@@ -576,7 +576,7 @@ function buildAllExamplesPage(nav: Navigator): Sprite {
 			nameTf.width = 200;
 			nameTf.height = 20;
 			nameTf.textColor = 0xffffff;
-			nameTf.size = 14;
+			nameTf.size = 16;
 			nameTf.bold = true;
 			content.addChild(nameTf);
 
@@ -586,7 +586,7 @@ function buildAllExamplesPage(nav: Navigator): Sprite {
 			descTf.width = CONTENT_W - 32;
 			descTf.height = 18;
 			descTf.textColor = 0x636e72;
-			descTf.size = 11;
+			descTf.size = 13;
 			content.addChild(descTf);
 
 			if (factory) {
@@ -606,7 +606,7 @@ function buildAllExamplesPage(nav: Navigator): Sprite {
 					okLabel.x = 190;
 					okLabel.y = cy + 48;
 					okLabel.textColor = 0x00b894;
-					okLabel.size = 14;
+					okLabel.size = 16;
 					content.addChild(okLabel);
 				} else if (idx === 2) {
 					// CheckBox type
@@ -626,7 +626,7 @@ function buildAllExamplesPage(nav: Navigator): Sprite {
 					okLabel.x = 210;
 					okLabel.y = cy + 40;
 					okLabel.textColor = 0x00b894;
-					okLabel.size = 14;
+					okLabel.size = 16;
 					content.addChild(okLabel);
 				} else {
 					// Panel type
@@ -643,7 +643,7 @@ function buildAllExamplesPage(nav: Navigator): Sprite {
 					okLabel.x = 230;
 					okLabel.y = cy + 48;
 					okLabel.textColor = 0x00b894;
-					okLabel.size = 14;
+					okLabel.size = 16;
 					content.addChild(okLabel);
 				}
 
@@ -655,7 +655,7 @@ function buildAllExamplesPage(nav: Navigator): Sprite {
 				errTf.width = 200;
 				errTf.height = 20;
 				errTf.textColor = 0xe17055;
-				errTf.size = 12;
+				errTf.size = 14;
 				content.addChild(errTf);
 
 				cy += 70;
@@ -728,7 +728,7 @@ export function createEXMLMenu(nav: Navigator): Sprite {
 	subtitle.width = CONTENT_W - 32;
 	subtitle.height = 20;
 	subtitle.textColor = 0x636e72;
-	subtitle.size = 12;
+	subtitle.size = 14;
 	content.addChild(subtitle);
 
 	// Cards

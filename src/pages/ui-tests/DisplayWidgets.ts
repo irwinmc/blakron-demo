@@ -12,7 +12,7 @@ export function buildDisplayWidgetsPage(nav: Navigator): Sprite {
 
 		// ── Labels ───────────────────────────────────────────────────────
 		buildLabels(content, cy);
-		cy += 210 + SECTION_GAP;
+		cy += 310 + SECTION_GAP;
 
 		// ── Rects ────────────────────────────────────────────────────────
 		buildRects(content, cy);
@@ -66,6 +66,18 @@ function buildLabels(content: Sprite, baseY: number): void {
 	lbl5.size = 16;
 	lbl5.textColor = 0x74b9ff;
 	g.addChild(lbl5);
+
+	cy += 28;
+
+	const lbl6 = new Label(
+		'В надвигающихся тучах над морем гордо реет Буревестник, подобный черной молнии. Он кричит, и тучи слышат радость в его смелом крике — жажду бури, силу гнева, пламя страсти и уверенность в победе.',
+	);
+	lbl6.y = cy;
+	lbl6.width = CONTENT_W - 32;
+	lbl6.wordWrap = true;
+	lbl6.size = 16;
+	lbl6.textColor = 0xdfe6e9;
+	g.addChild(lbl6);
 }
 
 function buildRects(content: Sprite, baseY: number): void {
